@@ -1,0 +1,73 @@
+
+=============================================================================
+=                           Base JIT design concept                         =
+=============================================================================
+=                                                                           =
+= 1. It is mostly a damn simple method-based native-code-template-          =
+=    concatenation just-in-time-compiler mostly without any fancy           =   
+=    optimizations just as CSE, SSA, and so on.                             =  
+=                                                                           =
+= 2. The native code execution can be continued from any correspondent byte =
+=    code instruction, so it is possible to jump to any byte-code-          =
+=    instruction-mapped native-code-sub-block from any each other in the    =
+=    same code context and in the same code instande.                       =
+=                                                                           =
+= 3. The from the JIT generated native code can call the correspondent byte =
+=    code instruction dispatcher function from the byte code interpreter at = 
+=    every time, if it needed, for example, for complex byte code           =  
+=    instructions which are more trouble than it's worth to compile these   =
+=    to native code.                                                        = 
+=                                                                           =
+= 4. The virtual byte code interpreter VM registers are used instead the    =
+=    native platform target CPU registers, for to keep the fallback-to-     =
+=    byte-code-instruction-dispatcher-function-stuff simple just much as    =
+=    possible.                                                              = 
+=                                                                           =
+= 5. The from the JIT generated native code can be self-modifying, for      =
+=    example at the monomorphic and polymorphic inline caching based byte   =
+=    code instructions, by modifying some index constant values at some     =
+=    native code instruction opcode arguments. But this is optional, since  =
+=    the byte code itself is also self-modifying in this monomorphic and    =
+=    polymorphic inline caching context. It's mostly a trade-off, which way = 
+=     performs better on which target platform CPU architecture.            =  
+=                                                                           =
+= 6. A byte-code-instruction-offset <-> native-code-instruction-offset map  = 
+=    must be generated and used for the jump-in-to-random-code-position-    = 
+=    usage and for the effective use of the fallback-to-byte-code-          =    
+=    instruction-dispatcher-function-stuff.                                 = 
+=                                                                           =
+=============================================================================
+
+=============================================================================
+=                            x86-specific stuff                             =
+=============================================================================
+=                                                                           =
+= Register layout:                                                          = 
+=                                                                           =
+=      esi = Offset to code context                                         = 
+=      edi = Offset to virtual VM registers                                 =
+=      ebp = Offset to byte code <-> native code offset mapping map array   =
+=   others = for various temporary usage                                    = 
+=                                                                           =
+= The x87 FPU is used for 64-bit double floating point operations           =   
+=                                                                           =
+=============================================================================
+
+
+=============================================================================
+=                            x64-specific stuff                             =
+=============================================================================
+=                                                                           =
+= Register layout:                                                          =
+=                                                                           =
+=      rbx = Offset to instance                                             =  
+=      r12 = Offset to code context                                         =
+=      r13 = Offset to byte code <-> native code offset mapping map array   =
+=      r14 = Offset to virtual VM registers                                 =  
+=      r15 = Offset to local hash table (only at function code, not at      = 
+=            global code!)                                                  =
+=   others = for various temporary usage                                    =   
+=                                                                           =
+= SSE instructions are used for 64-bit double floating point operations     =
+=                                                                           =
+=============================================================================
