@@ -143,12 +143,33 @@ or contact:
   {$define Delphi2009AndUp}
  {$endif}
  {$ifdef ver260}
-  {$define DelphiXE4}
+  {$define DelphiXE5}
   {$define DelphiXEAndUp}
   {$define DelphiXE2AndUp}
   {$define DelphiXE3AndUp}
   {$define DelphiXE4AndUp}
   {$define DelphiXE5AndUp}
+  {$define Delphi2009AndUp}
+ {$endif}
+ {$ifdef ver270}
+  {$define DelphiXE6}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define Delphi2009AndUp}
+ {$endif}
+ {$ifdef ver280}
+  {$define DelphiXE7}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
   {$define Delphi2009AndUp}
  {$endif}
  {$ifndef Delphi4or5}
