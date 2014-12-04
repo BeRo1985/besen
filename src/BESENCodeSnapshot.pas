@@ -205,6 +205,10 @@ var VisitedNodes:TBESENInt64SelfBalancedTree;
        if ReadBool then begin
         Code:=TBESENCode(TBESENASTNodeFunctionBody(result).Code);
         Code.Body:=TBESENASTNodeFunctionBody(ReadNode);
+        Code.MaxRegisters:=ReadInt32;
+        Code.MaxBlock:=ReadInt32;
+        Code.MaxParamArgs:=ReadInt32;
+        Code.MaxLoop:=ReadInt32;
         Code.HasLocalDelete:=ReadBool;
         Code.IsComplexFunction:=ReadBool;
         Code.HasMaybeDirectEval:=ReadBool;
@@ -288,7 +292,7 @@ var VisitedNodes:TBESENInt64SelfBalancedTree;
           end;
          end;
         end;
-        Code.ResetPolymorphicInlineCacheInstructions;
+        Code.Finish;
        end;
       end;
       bntFUNCTIONLITERAL:begin
@@ -935,6 +939,10 @@ var VisitedNodes:TBESENPointerSelfBalancedTree;
      if assigned(TBESENASTNodeFunctionBody(ToVisit).Code) then begin
       Code:=TBESENCode(TBESENASTNodeFunctionBody(ToVisit).Code);
       Visit(Code.Body);
+      WriteInt32(Code.MaxRegisters);
+      WriteInt32(Code.MaxBlock);
+      WriteInt32(Code.MaxParamArgs);
+      WriteInt32(Code.MaxLoop);
       WriteBool(Code.HasLocalDelete);
       WriteBool(Code.IsComplexFunction);
       WriteBool(Code.HasMaybeDirectEval);

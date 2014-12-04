@@ -33,9 +33,9 @@ unit BESENVersionConstants;
 
 interface
 
-const BESENVersion='20131129-2252-0000';
+const BESENVersion='20141204-1647-0000';
 
-      BESENCodeFormatRevisionNumber:int64=18;
+      BESENCodeFormatRevisionNumber:int64=19;
 
 implementation
 
