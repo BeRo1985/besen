@@ -10,7 +10,7 @@
 = 2. The native code execution can be continued from any correspondent byte =
 =    code instruction, so it is possible to jump to any byte-code-          =
 =    instruction-mapped native-code-sub-block from any each other in the    =
-=    same code context and in the same code instande.                       =
+=    same code context and in the same code instant.                        =
 =                                                                           =
 = 3. The from the JIT generated native code can call the correspondent byte =
 =    code instruction dispatcher function from the byte code interpreter at = 
@@ -29,7 +29,7 @@
 =    native code instruction opcode arguments. But this is optional, since  =
 =    the byte code itself is also self-modifying in this monomorphic and    =
 =    polymorphic inline caching context. It's mostly a trade-off, which way = 
-=     performs better on which target platform CPU architecture.            =  
+=    performs better on which target platform CPU architecture.             =  
 =                                                                           =
 = 6. A byte-code-instruction-offset <-> native-code-instruction-offset map  = 
 =    must be generated and used for the jump-in-to-random-code-position-    = 

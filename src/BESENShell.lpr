@@ -722,7 +722,7 @@ end;
 procedure TShellFunctions.NativeVersion(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
  ResultValue.ValueType:=bvtSTRING;
- ResultValue.Str:='BESEN Shell v'+BESENVersion+' - Copyright (C) 2010-2013, Benjamin ''BeRo'' Rosseaux';
+ ResultValue.Str:='BESEN Shell v'+BESENVersion+' - Copyright (C) 2010-2014, Benjamin ''BeRo'' Rosseaux';
 end;
 
 procedure Print(const v:TBESENValue);
@@ -799,7 +799,7 @@ begin
       end;
       delete(s,1,1);
       if (s='?') or (s='h') or (s='help') then begin
-       writeln('BESEN Shell v'+BESENVersion+' - Copyright (C) 2010-2013, Benjamin ''BeRo'' Rosseaux');
+       writeln('BESEN Shell v'+BESENVersion+' - Copyright (C) 2010-2014, Benjamin ''BeRo'' Rosseaux');
        writeln('Usage: ',ExtractFileName(paramstr(0)),' [filename] [options]');
        writeln('Options: +help       = This help text');
        writeln('         +javascript = Enable facile javascript compatibility mode');
