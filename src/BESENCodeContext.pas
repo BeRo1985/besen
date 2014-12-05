@@ -3731,9 +3731,10 @@ begin
      E.Message:='';
     end;
    end;
-   else begin
+   else begin          
     ExceptionValue:=BESENEmptyValue;
-    if ProcessException then begin
+    Reraise:=ProcessException;
+    if Reraise then begin
      raise;
     end;
    end;
