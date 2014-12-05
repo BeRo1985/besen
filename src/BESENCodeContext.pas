@@ -3725,13 +3725,14 @@ begin
 {$else}
     ExceptionValue:=ConstructError(TBESEN(Instance).ObjectErrorConstructor,BESENUTF8ToUTF16(BESENConvertToUTF8(e.Message)));
 {$endif}
+    Reraise:=ProcessException;
     if Reraise then begin
      raise;
     end else begin
      E.Message:='';
     end;
    end;
-   else begin          
+   else begin
     ExceptionValue:=BESENEmptyValue;
     Reraise:=ProcessException;
     if Reraise then begin
