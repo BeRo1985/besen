@@ -3,7 +3,7 @@
 ********************************************************************************
 
 BESEN - A ECMAScript Fifth Edition Object Pascal Implementation
-Copyright (C) 2009-2014, Benjamin 'BeRo' Rosseaux
+Copyright (C) 2009-2015, Benjamin 'BeRo' Rosseaux
 
 The source code of the BESEN ecmascript engine library and helper tools are 
 distributed under the Library GNU Lesser General Public License Version 2.1 
@@ -237,7 +237,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1250:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$fffd,$201e,$2026,$2020,$2021,
         $fffd,$2030,$0160,$2039,$015a,$0164,$017d,$0179,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $fffd,$2122,$0161,$203a,$015b,$0165,$017e,$017a,
         $00a0,$02c7,$02d8,$0141,$00a4,$0104,$00a6,$00a7,
         $00a8,$00a9,$015e,$00ab,$00ac,$00ad,$00ae,$017b,
@@ -255,7 +255,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1251:TBESENCharsetTable=
        ($0402,$0403,$201a,$0453,$201e,$2026,$2020,$2021,
         $20ac,$2030,$0409,$2039,$040a,$040c,$040b,$040f,
-        $0452,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $0452,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $fffd,$2122,$0459,$203a,$045a,$045c,$045b,$045f,
         $00a0,$040e,$045e,$0408,$00a4,$0490,$00a6,$00a7,
         $0401,$00a9,$0404,$00ab,$00ac,$00ad,$00ae,$0407,
@@ -273,7 +273,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1252:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$0192,$201e,$2026,$2020,$2021,
         $02c6,$2030,$0160,$2039,$0152,$fffd,$017d,$fffd,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $02dc,$2122,$0161,$203a,$0153,$fffd,$017e,$0178,
         $00A0,$00A1,$00A2,$00A3,$00A4,$00A5,$00A6,$00A7,
         $00A8,$00A9,$00AA,$00AB,$00AC,$00AD,$00AE,$00AF,
@@ -291,7 +291,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1253:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$0192,$201e,$2026,$2020,$2021,
         $fffd,$2030,$fffd,$2039,$fffd,$fffd,$fffd,$fffd,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $fffd,$2122,$fffd,$203a,$fffd,$fffd,$fffd,$fffd,
         $00a0,$0385,$0386,$00a3,$00a4,$00a5,$00a6,$00a7,
         $00a8,$00a9,$fffd,$00ab,$00ac,$00ad,$00ae,$2015,
@@ -309,7 +309,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1254:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$0192,$201e,$2026,$2020,$2021,
         $02c6,$2030,$0160,$2039,$0152,$fffd,$fffd,$fffd,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $02dc,$2122,$0161,$203a,$0153,$fffd,$fffd,$0178,
         $00A0,$00A1,$00A2,$00A3,$00A4,$00A5,$00A6,$00A7,
         $00A8,$00A9,$00AA,$00AB,$00AC,$00AD,$00AE,$00AF,
@@ -327,7 +327,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1255:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$0192,$201e,$2026,$2020,$2021,
         $02c6,$2030,$fffd,$2039,$fffd,$fffd,$fffd,$fffd,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $02dc,$2122,$fffd,$203a,$fffd,$fffd,$fffd,$fffd,
         $00a0,$00a1,$00a2,$00a3,$20aa,$00a5,$00a6,$00a7,
         $00a8,$00a9,$00d7,$00ab,$00ac,$00ad,$00ae,$00af,
@@ -345,7 +345,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1256:TBESENCharsetTable=
        ($20ac,$067e,$201a,$0192,$201e,$2026,$2020,$2021,
         $02c6,$2030,$0679,$2039,$0152,$0686,$0698,$0688,
-        $06af,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $06af,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $06a9,$2122,$0691,$203a,$0153,$200c,$200d,$06ba,
         $00a0,$060c,$00a2,$00a3,$00a4,$00a5,$00a6,$00a7,
         $00a8,$00a9,$06be,$00ab,$00ac,$00ad,$00ae,$00af,
@@ -363,7 +363,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1257:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$fffd,$201e,$2026,$2020,$2021,
         $fffd,$2030,$fffd,$2039,$fffd,$00a8,$02c7,$00b8,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $fffd,$2122,$fffd,$203a,$fffd,$00af,$02db,$fffd,
         $00a0,$fffd,$00a2,$00a3,$00a4,$fffd,$00a6,$00a7,
         $00d8,$00a9,$0156,$00ab,$00ac,$00ad,$00ae,$00c6,
@@ -381,7 +381,7 @@ const BESENAllCharsets:TBESENCharsetSet=[ISO_8859_1,ISO_8859_2,ISO_8859_3,ISO_88
       BESENCharCP_1258:TBESENCharsetTable=
        ($20ac,$fffd,$201a,$0192,$201e,$2026,$2020,$2021,
         $02c6,$2030,$fffd,$2039,$0152,$fffd,$fffd,$fffd,
-        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2014,
+        $fffd,$2018,$2019,$201c,$201d,$2022,$2013,$2015,
         $02dc,$2122,$fffd,$203a,$0153,$fffd,$fffd,$0178,
         $00a0,$00a1,$00a2,$00a3,$00a4,$00a5,$00a6,$00a7,
         $00a8,$00a9,$00aa,$00ab,$00ac,$00ad,$00ae,$00af,
