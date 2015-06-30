@@ -221,6 +221,9 @@ type TBESEN=class;
        function Eval(Source:{$ifdef BESENSingleStringType}TBESENSTRING{$else}TBESENUTF8STRING{$endif};const ThisArgument:TBESENValue;const PrecompiledASTNode:TBESENASTNode=nil):TBESENValue; overload;
        function Eval(Source:{$ifdef BESENSingleStringType}TBESENSTRING{$else}TBESENUTF8STRING{$endif};const PrecompiledASTNode:TBESENASTNode=nil):TBESENValue; overload;
        function JSONEval(Source:{$ifdef BESENSingleStringType}TBESENSTRING{$else}TBESENUTF8STRING{$endif};const PrecompiledASTNode:TBESENASTNode=nil):TBESENValue; overload;
+       function JSONStringify(const Value:TBESENValue):TBESENValue; overload;
+       function JSONStringify(const Value,Replacer:TBESENValue):TBESENValue; overload;
+       function JSONStringify(const Value,Replacer,Space:TBESENValue):TBESENValue; overload;
        procedure InjectObject(Name,Source:{$ifdef BESENSingleStringType}TBESENSTRING{$else}TBESENUTF8STRING{$endif});
        function NewDeclarativeEnvironment(const Environment:TBESENLexicalEnvironment;const IsItStrict,HasMaybeDirectEval:TBESENBoolean):TBESENLexicalEnvironment;
        function NewObjectEnvironment(const BindingObject:TBESENObject;const Environment:TBESENLexicalEnvironment;const IsItStrict,HasMaybeDirectEval:TBESENBoolean):TBESENLexicalEnvironment;
@@ -1078,6 +1081,63 @@ begin
   end;
  end else begin
   GarbageCollector.CollectAll;
+ end;
+end;
+
+function TBESEN.JSONStringify(const Value:TBESENValue):TBESENValue;
+var Arguments:array[0..0] of TBESENValue;
+    ValuePointers:array[0..0] of PBESENValue;
+begin
+ result:=BESENEmptyValue;
+ GarbageCollector.LockValue(Value);
+ try
+  Arguments[0]:=Value;
+  ValuePointers[0]:=@Arguments[0];
+  ObjectJSON.NativeStringify(BESENObjectValue(ObjectJSON),@ValuePointers[0],1,result);
+ finally
+  GarbageCollector.UnlockValue(Value);
+ end;
+end;
+
+function TBESEN.JSONStringify(const Value,Replacer:TBESENValue):TBESENValue;
+var Arguments:array[0..1] of TBESENValue;
+    ValuePointers:array[0..1] of PBESENValue;
+begin
+ result:=BESENEmptyValue;
+ GarbageCollector.LockValue(Value);
+ GarbageCollector.LockValue(Replacer);
+ try
+  Arguments[0]:=Value;
+  Arguments[1]:=Replacer;
+  ValuePointers[0]:=@Arguments[0];
+  ValuePointers[1]:=@Arguments[1];
+  ObjectJSON.NativeStringify(BESENObjectValue(ObjectJSON),@ValuePointers[0],2,result);
+ finally
+  GarbageCollector.UnlockValue(Value);
+  GarbageCollector.UnlockValue(Replacer);
+ end;
+end;
+
+function TBESEN.JSONStringify(const Value,Replacer,Space:TBESENValue):TBESENValue;
+var Arguments:array[0..2] of TBESENValue;
+    ValuePointers:array[0..2] of PBESENValue;
+begin
+ result:=BESENEmptyValue;
+ GarbageCollector.LockValue(Value);
+ GarbageCollector.LockValue(Replacer);
+ GarbageCollector.LockValue(Space);
+ try
+  Arguments[0]:=Value;
+  Arguments[1]:=Replacer;
+  Arguments[2]:=Space;
+  ValuePointers[0]:=@Arguments[0];
+  ValuePointers[1]:=@Arguments[1];
+  ValuePointers[2]:=@Arguments[2];
+  ObjectJSON.NativeStringify(BESENObjectValue(ObjectJSON),@ValuePointers[0],3,result);
+ finally
+  GarbageCollector.UnlockValue(Value);
+  GarbageCollector.UnlockValue(Replacer);
+  GarbageCollector.UnlockValue(Space);
  end;
 end;
 
