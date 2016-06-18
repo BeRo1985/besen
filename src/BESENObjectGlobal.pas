@@ -116,8 +116,7 @@ var s:TBESENString;
     i,StartPos,UntilPos,r,c:integer;
     Negative:boolean;
 begin
- ResultValue.ValueType:=bvtNUMBER;
- ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+ ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  if CountArguments>0 then begin
   if CountArguments>1 then begin
    r:=TBESEN(Instance).ToInt(Arguments^[1]^);
@@ -125,7 +124,7 @@ begin
    r:=0;
   end;
   if (r<>0) and ((r<2) or (r>36)) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
    exit;
   end;
   s:=TBESEN(Instance).ToStr(Arguments^[0]^);
@@ -173,48 +172,45 @@ begin
    inc(UntilPos);
   end;
   if StartPos>=UntilPos then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
    exit;
   end;
   i:=UntilPos-StartPos;
   if r=10 then begin
-   ResultValue.Num:=BESENStringToNumber(copy(s,StartPos,UntilPos-StartPos),false,false);
+   ResultValue:=BESENStringToNumber(copy(s,StartPos,UntilPos-StartPos),false,false);
   end else begin
-   ResultValue.Num:=BESENStringToNumberBase(copy(s,StartPos,UntilPos-StartPos),r);
+   ResultValue:=BESENStringToNumberBase(copy(s,StartPos,UntilPos-StartPos),r);
   end;
-  if Negative and not BESENIsNaN(ResultValue.Num) then begin
-   PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+  if Negative and not BESENIsNaN(ResultValue) then begin
+   PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
   end;
  end;
 end;
 
 procedure TBESENObjectGlobal.NativeParseFloat(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin
-  ResultValue.Num:=BESENStringToNumber(TBESEN(Instance).ToStr(Arguments^[0]^),false,false);
+  ResultValue:=BESENStringToNumber(TBESEN(Instance).ToStr(Arguments^[0]^),false,false);
  end;
 end;
 
 procedure TBESENObjectGlobal.NativeIsNaN(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtBOOLEAN;
  if CountArguments=0 then begin
-  ResultValue.Bool:=true;
+  ResultValue:=BESENBooleanValue(true);
  end else begin
-  ResultValue.Bool:=BESENIsNaN(TBESEN(Instance).ToNum(Arguments^[0]^));
+  ResultValue:=BESENBooleanValue(BESENIsNaN(TBESEN(Instance).ToNum(Arguments^[0]^)));
  end;
 end;
 
 procedure TBESENObjectGlobal.NativeIsFinite(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtBOOLEAN;
  if CountArguments=0 then begin
-  ResultValue.Bool:=false;
+  ResultValue:=BESENBooleanValue(false);
  end else begin
-  ResultValue.Bool:=BESENIsFinite(TBESEN(Instance).ToNum(Arguments^[0]^));
+  ResultValue:=BESENBooleanValue(BESENIsFinite(TBESEN(Instance).ToNum(Arguments^[0]^)));
  end;
 end;
 
@@ -508,8 +504,7 @@ begin
    s:=s+BESENCompatibilityModes[i].Name;
   end;
  end;
- ResultValue.ValueType:=bvtSTRING;
- ResultValue.Str:=s;
+ ResultValue:=BESENStringValue(s);
 end;
 
 end.

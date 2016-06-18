@@ -125,12 +125,11 @@ end;
 procedure TBESENObjectMath.NativeAbs(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
  if CountArguments=0 then begin
-  ResultValue.ValueType:=bvtNUMBER;
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not BESENIsNaN(ResultValue.Num) then begin
-   PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi and $7fffffff;
+  if not BESENIsNaN(ResultValue) then begin
+   PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi and $7fffffff;
   end;
  end;
 end;
@@ -138,17 +137,16 @@ end;
 procedure TBESENObjectMath.NativeACos(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
  if CountArguments=0 then begin
-  ResultValue.ValueType:=bvtNUMBER;
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not BESENIsNaN(ResultValue.Num) then begin
-   if (ResultValue.Num<-1) or (ResultValue.Num>1) then begin
-    int64(pointer(@ResultValue.Num)^):=int64(pointer(@BESENDoubleNaN)^);
-   end else if ResultValue.Num=1 then begin
-    ResultValue.Num:=0;
+  if not BESENIsNaN(ResultValue) then begin
+   if (ResultValue<-1) or (ResultValue>1) then begin
+    int64(pointer(@ResultValue)^):=int64(pointer(@BESENDoubleNaN)^);
+   end else if ResultValue=1 then begin
+    ResultValue:=BESENNumberValue(0.0);
    end else begin
-    ResultValue.Num:=arccos(ResultValue.Num);
+    ResultValue:=BESENNumberValue(arccos(ResultValue));
    end;
   end;
  end;
@@ -157,15 +155,14 @@ end;
 procedure TBESENObjectMath.NativeASin(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
  if CountArguments=0 then begin
-  ResultValue.ValueType:=bvtNUMBER;
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not BESENIsNaN(ResultValue.Num) then begin
-   if (ResultValue.Num<-1) or (ResultValue.Num>1) then begin
-    int64(pointer(@ResultValue.Num)^):=int64(pointer(@BESENDoubleNaN)^);
-   end else if not BESENIsZero(ResultValue.Num) then begin
-    ResultValue.Num:=arcsin(ResultValue.Num);
+  if not BESENIsNaN(ResultValue) then begin
+   if (ResultValue<-1) or (ResultValue>1) then begin
+    int64(pointer(@ResultValue)^):=int64(pointer(@BESENDoubleNaN)^);
+   end else if not BESENIsZero(ResultValue) then begin
+    ResultValue:=BESENNumberValue(arcsin(ResultValue));
    end;
   end;
  end;
@@ -174,17 +171,16 @@ end;
 procedure TBESENObjectMath.NativeATan(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
  if CountArguments=0 then begin
-  ResultValue.ValueType:=bvtNUMBER;
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not (BESENIsNaN(ResultValue.Num) or BESENIsZero(ResultValue.Num)) then begin
-   if BESENIsPosInfinite(ResultValue.Num) then begin
-    ResultValue.Num:=PI*0.5;
-   end else if BESENIsNegInfinite(ResultValue.Num) then begin
-    ResultValue.Num:=-(PI*0.5);
+  if not (BESENIsNaN(ResultValue) or BESENIsZero(ResultValue)) then begin
+   if BESENIsPosInfinite(ResultValue) then begin
+    ResultValue:=BESENNumberValue(PI*0.5);
+   end else if BESENIsNegInfinite(ResultValue) then begin
+    ResultValue:=BESENNumberValue(-(PI*0.5));
    end else begin
-    ResultValue.Num:=arctan(ResultValue.Num);
+    ResultValue:=BESENNumberValue(arctan(ResultValue));
    end;
   end;
  end;
@@ -193,67 +189,65 @@ end;
 procedure TBESENObjectMath.NativeATan2(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var x,y:TBESENNumber;
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments<2 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   y:=TBESEN(Instance).ToNum(Arguments^[0]^);
   x:=TBESEN(Instance).ToNum(Arguments^[1]^);
   if BESENIsNaN(y) or BESENIsNaN(x) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
   end else if (y>0) and BESENIsZero(x) then begin
-   ResultValue.Num:=PI*0.5;
+   ResultValue:=BESENNumberValue(PI*0.5);
   end else if BESENIsPosZero(y) and ((x>0) or BESENIsPosZero(x)) then begin
-   ResultValue.Num:=0;
+   ResultValue:=BESENNumberValue(0.0);
   end else if BESENIsPosZero(y) and (BESENIsNegZero(x) or (x<0)) then begin
-   ResultValue.Num:=PI;
+   ResultValue:=BESENNumberValue(PI)
   end else if BESENIsNegZero(y) and ((BESENIsFinite(x) and not BESENIsNegative(x)) or BESENIsPosZero(x)) then begin
-   ResultValue.Num:=0;
-   PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+   ResultValue:=BESENNumberValue(0.0);
+   PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
   end else if BESENIsNegZero(y) and (BESENIsNegZero(x) or (x<0)) then begin
-   ResultValue.Num:=-PI;
+   ResultValue:=BESENNumberValue(-PI)
   end else if (y<0) and BESENIsZero(x) then begin
-   ResultValue.Num:=-PI*0.5;
+   ResultValue:=BESENNumberValue(-PI*0.5)
   end else if ((y>0) and BESENIsFinite(y)) and BESENIsPosInfinite(x) then begin
-   ResultValue.Num:=0;
+   ResultValue:=BESENNumberValue(0.0);
   end else if ((y>0) and BESENIsFinite(y)) and BESENIsNegInfinite(x) then begin
-   ResultValue.Num:=PI;
+   ResultValue:=BESENNumberValue(PI);
   end else if ((y<0) and BESENIsFinite(y)) and BESENIsPosInfinite(x) then begin
-   ResultValue.Num:=0;
-   PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+   ResultValue:=BESENNumberValue(0.0);
+   PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
   end else if ((y<0) and BESENIsFinite(y)) and BESENIsNegInfinite(x) then begin
-   ResultValue.Num:=-PI;
+   ResultValue:=BESENNumberValue(-PI);
   end else if BESENIsPosInfinite(y) and BESENIsFinite(x) then begin
-   ResultValue.Num:=PI*0.5;
+   ResultValue:=BESENNumberValue(PI*0.5);
   end else if BESENIsNegInfinite(y) and BESENIsFinite(x) then begin
-   ResultValue.Num:=-(PI*0.5);
+   ResultValue:=BESENNumberValue(-(PI*0.5));
   end else if BESENIsPosInfinite(y) and BESENIsPosInfinite(x) then begin
-   ResultValue.Num:=PI*0.25;
+   ResultValue:=BESENNumberValue(PI*0.25);
   end else if BESENIsPosInfinite(y) and BESENIsNegInfinite(x) then begin
-   ResultValue.Num:=(3*PI)*0.25;
+   ResultValue:=BESENNumberValue((3*PI)*0.25);
   end else if BESENIsNegInfinite(y) and BESENIsPosInfinite(x) then begin
-   ResultValue.Num:=-(PI*0.25);
+   ResultValue:=BESENNumberValue(-(PI*0.25));
   end else if BESENIsNegInfinite(y) and BESENIsNegInfinite(x) then begin
-   ResultValue.Num:=-((3*PI)*0.25);
+   ResultValue:=BESENNumberValue(-((3*PI)*0.25));
   end else begin
-   ResultValue.Num:=arctan2(y,x);
+   ResultValue:=BESENNumberValue(arctan2(y,x));
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeCeil(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not (BESENIsNaN(ResultValue.Num) or BESENIsInfinite(ResultValue.Num) or BESENIsZero(ResultValue.Num)) then begin
-   if (ResultValue.Num<0) and (ResultValue.Num>(-1)) then begin
-    ResultValue.Num:=0;
-    PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+  if not (BESENIsNaN(ResultValue) or BESENIsInfinite(ResultValue) or BESENIsZero(ResultValue)) then begin
+   if (ResultValue<0.0) and (ResultValue>(-1.0)) then begin
+    ResultValue:=BESENNumberValue(0.0);
+    PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
    end else begin
-    ResultValue.Num:=BESENCeil(ResultValue.Num);
+    ResultValue:=BESENNumberValue(BESENCeil(BESENValueNumber(ResultValue)));
    end;
   end;
  end;
@@ -261,54 +255,51 @@ end;
 
 procedure TBESENObjectMath.NativeCos(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) or BESENIsInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if BESENIsZero(ResultValue.Num) then begin
-   ResultValue.Num:=1;
+  if BESENIsNaN(ResultValue) or BESENIsInfinite(ResultValue) then begin
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
+  end else if BESENIsZero(ResultValue) then begin
+   ResultValue:=BESENNumberValue(1.0);
   end else begin
-   ResultValue.Num:=cos(ResultValue.Num);
+   ResultValue:=BESENNumberValue(cos(BESENValueNumber(ResultValue)));
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeExp(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if BESENIsZero(ResultValue.Num) then begin
-   ResultValue.Num:=1;
-  end else if BESENIsPosInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
-  end else if BESENIsNegInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=0;
+  if BESENIsNaN(ResultValue) then begin
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
+  end else if BESENIsZero(ResultValue) then begin
+   ResultValue:=BESENNumberValue(1.0);
+  end else if BESENIsPosInfinite(ResultValue) then begin
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleInfPos)^));
+  end else if BESENIsNegInfinite(ResultValue) then begin
+   ResultValue:=BESENNumberValue(0.0);
   end else begin
-   ResultValue.Num:=exp(ResultValue.Num);
+   ResultValue:=BESENNumberValue(exp(BESENValueNumber(ResultValue)));
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeFloor(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if not (BESENIsNaN(ResultValue.Num) or BESENIsInfinite(ResultValue.Num) or BESENIsZero(ResultValue.Num)) then begin
-   if (ResultValue.Num>0) and (ResultValue.Num<1) then begin
-    ResultValue.Num:=0;
+  if not (BESENIsNaN(ResultValue) or BESENIsInfinite(ResultValue) or BESENIsZero(ResultValue)) then begin
+   if (ResultValue>0.0) and (ResultValue<1.0) then begin
+    ResultValue:=BESENNumberValue(0.0);
    end else begin
-    ResultValue.Num:=BESENFloor(ResultValue.Num);
+    ResultValue:=BESENNumberValue(BESENFloor(BESENValueNumber(ResultValue)));
    end;
   end;
  end;
@@ -316,21 +307,20 @@ end;
 
 procedure TBESENObjectMath.NativeLog(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) or (ResultValue.Num<0) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if BESENIsZero(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
-  end else if ResultValue.Num=1 then begin
-   ResultValue.Num:=0;
-  end else if BESENIsPosInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+  if BESENIsNaN(ResultValue) or (ResultValue<0) then begin
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleNaN)^));
+  end else if BESENIsZero(ResultValue) then begin
+   ResultValue:=BESENNumberValue(TBESENNumber(pointer(@BESENDoubleInfNeg)^));
+  end else if ResultValue=1 then begin
+   ResultValue:=0;
+  end else if BESENIsPosInfinite(ResultValue) then begin
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   end else begin
-   ResultValue.Num:=ln(ResultValue.Num);
+   ResultValue:=ln(ResultValue);
   end;
  end;
 end;
@@ -339,9 +329,8 @@ procedure TBESENObjectMath.NativeMax(const ThisArgument:TBESENValue;Arguments:PP
 var x,n:TBESENNumber;
     i:integer;
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
  end else begin
   n:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
   for i:=0 to CountArguments-1 do begin
@@ -354,7 +343,7 @@ begin
     n:=x;
    end;
   end;
-  ResultValue.Num:=n;
+  ResultValue:=n;
  end;
 end;
 
@@ -362,9 +351,8 @@ procedure TBESENObjectMath.NativeMin(const ThisArgument:TBESENValue;Arguments:PP
 var x,n:TBESENNumber;
     i:integer;
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
  end else begin
   n:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   for i:=0 to CountArguments-1 do begin
@@ -377,100 +365,97 @@ begin
     n:=x;
    end;
   end;
-  ResultValue.Num:=n;
+  ResultValue:=n;
  end;
 end;
 
 procedure TBESENObjectMath.NativePow(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var x,y:TBESENNumber;
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments<2 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin
   x:=TBESEN(Instance).ToNum(Arguments^[0]^);
   y:=TBESEN(Instance).ToNum(Arguments^[1]^);
   if BESENIsNaN(y) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
   end else if BESENIsZero(y) then begin
-   ResultValue.Num:=1;
+   ResultValue:=1;
   end else if BESENIsNaN(x) and not BESENIsZero(y) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
   end else if (abs(x)>1) and BESENIsPosInfinite(y) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   end else if (abs(x)>1) and BESENIsNegInfinite(y) then begin
-   ResultValue.Num:=0;
+   ResultValue:=0;
   end else if (abs(x)=1) and BESENIsInfinite(y) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
   end else if (abs(x)<1) and BESENIsPosInfinite(y) then begin
-   ResultValue.Num:=0;
+   ResultValue:=0;
   end else if (abs(x)<1) and BESENIsNegInfinite(y) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   end else if BESENIsPosInfinite(x) and (y>0) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   end else if BESENIsPosInfinite(x) and (y<0) then begin
-   ResultValue.Num:=0;
+   ResultValue:=0;
   end else if BESENIsNegInfinite(x) and (y>0) then begin
    y:=abs(BESENModulo(y,2.0));
    if y=1 then begin
-    ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
+    ResultValue:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
    end else begin
-    ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+    ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
    end;
   end else if BESENIsNegInfinite(x) and (y<0) then begin
    y:=abs(BESENModulo(-y,2.0));
-   ResultValue.Num:=0;
+   ResultValue:=0;
    if y=1 then begin
-    PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+    PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
    end;
   end else if BESENIsPosZero(x) and (y>0) then begin
-   ResultValue.Num:=0;
+   ResultValue:=0;
   end else if BESENIsPosZero(x) and (y<0) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
   end else if BESENIsNegZero(x) and (y>0) then begin
    y:=abs(BESENModulo(-y,2.0));
-   ResultValue.Num:=0;
+   ResultValue:=0;
    if y=1 then begin
-    PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
+    PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
    end;
   end else if BESENIsNegZero(x) and (y<0) then begin
    y:=abs(BESENModulo(y,2.0));
    if y=1 then begin
-    ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
+    ResultValue:=TBESENNumber(pointer(@BESENDoubleInfNeg)^);
    end else begin
-    ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
+    ResultValue:=TBESENNumber(pointer(@BESENDoubleInfPos)^);
    end;
   end else if ((x<0) and BESENIsFinite(x)) and (BESENIsFinite(y) and not BESENIsZero(frac(y))) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
   end else begin
-   ResultValue.Num:=power(x,y);
+   ResultValue:=power(x,y);
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeRandom(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
- ResultValue.Num:=TBESEN(Instance).RandomGenerator.GetNumber;
+ ResultValue:=TBESEN(Instance).RandomGenerator.GetNumber;
 end;
 
 procedure TBESENObjectMath.NativeRound(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if not (BESENIsZero(ResultValue.Num) or BESENIsInfinite(ResultValue.Num)) then begin
-   if (ResultValue.Num>=-0.5) and (ResultValue.Num<0) then begin
-    ResultValue.Num:=0;
-    PBESENDoubleHiLo(@ResultValue.Num)^.Hi:=PBESENDoubleHiLo(@ResultValue.Num)^.Hi or $80000000;
-   end else if (ResultValue.Num>0) and (ResultValue.Num<0.5) then begin
-    ResultValue.Num:=0;
+  if BESENIsNaN(ResultValue) then begin
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  end else if not (BESENIsZero(ResultValue) or BESENIsInfinite(ResultValue)) then begin
+   if (ResultValue>=-0.5) and (ResultValue<0) then begin
+    ResultValue:=0;
+    PBESENDoubleHiLo(@ResultValue)^.Hi:=PBESENDoubleHiLo(@ResultValue)^.Hi or $80000000;
+   end else if (ResultValue>0) and (ResultValue<0.5) then begin
+    ResultValue:=0;
    end else begin
-    ResultValue.Num:=BESENFloor(ResultValue.Num+0.5);
+    ResultValue:=BESENFloor(ResultValue+0.5);
    end;
   end;
  end;
@@ -478,45 +463,42 @@ end;
 
 procedure TBESENObjectMath.NativeSin(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) or BESENIsInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if not BESENIsZero(ResultValue.Num) then begin
-   ResultValue.Num:=sin(ResultValue.Num);
+  if BESENIsNaN(ResultValue) or BESENIsInfinite(ResultValue) then begin
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  end else if not BESENIsZero(ResultValue) then begin
+   ResultValue:=sin(ResultValue);
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeSqrt(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) or BESENIsNegative(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if not (BESENIsZero(ResultValue.Num) or BESENIsPosInfinite(ResultValue.Num)) then begin
-   ResultValue.Num:=sqrt(ResultValue.Num);
+  if BESENIsNaN(ResultValue) or BESENIsNegative(ResultValue) then begin
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  end else if not (BESENIsZero(ResultValue) or BESENIsPosInfinite(ResultValue)) then begin
+   ResultValue:=sqrt(ResultValue);
   end;
  end;
 end;
 
 procedure TBESENObjectMath.NativeTan(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtNUMBER;
  if CountArguments=0 then begin
-  ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
  end else begin                                                                       
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,ResultValue);
-  if BESENIsNaN(ResultValue.Num) or BESENIsInfinite(ResultValue.Num) then begin
-   ResultValue.Num:=TBESENNumber(pointer(@BESENDoubleNaN)^);
-  end else if not BESENIsZero(ResultValue.Num) then begin
-   ResultValue.Num:=tan(ResultValue.Num);
+  if BESENIsNaN(ResultValue) or BESENIsInfinite(ResultValue) then begin
+   ResultValue:=TBESENNumber(pointer(@BESENDoubleNaN)^);
+  end else if not BESENIsZero(ResultValue) then begin
+   ResultValue:=tan(ResultValue);
   end;
  end;
 end;

@@ -77,20 +77,20 @@ var Root,Recviver:TBESENObject;
  begin
   Keys:=nil;
   Holder.Get(Name,Val);
-  if (Val.ValueType=bvtOBJECT) and assigned(Val.Obj) then begin
-   o:=TBESENObject(Val.Obj);
+  if (BESENValueType(Val)=bvtOBJECT) and assigned(BESENValueObject(Val)) then begin
+   o:=TBESENObject(BESENValueObject(Val));
    o.GarbageCollectorLock;
    try
-    if Val.Obj is TBESENObjectArray then begin
+    if TBESENObject(BESENValueObject(Val)) is TBESENObjectArray then begin
      i:=0;
-     TBESENObject(Val.Obj).Get('length',Temp,TBESENObject(Val.Obj),BESENLengthHash);
+     TBESENObject(BESENValueObject(Val)).Get('length',Temp,TBESENObject(BESENValueObject(Val)),BESENLengthHash);
      Len:=TBESEN(Instance).ToInt(Temp);
      while i<Len do begin
-      Walk(TBESENObject(Val.Obj),BESENArrayIndexToStr(i),NewElement);
-      if NewElement.ValueType=bvtUNDEFINED then begin
-       TBESENObject(Val.Obj).Delete(BESENArrayIndexToStr(i),false);
+      Walk(TBESENObject(BESENValueObject(Val)),BESENArrayIndexToStr(i),NewElement);
+      if BESENValueType(NewElement)=bvtUNDEFINED then begin
+       TBESENObject(BESENValueObject(Val)).Delete(BESENArrayIndexToStr(i),false);
       end else begin
-       TBESENObject(Val.Obj).DefineOwnProperty(BESENArrayIndexToStr(i),BESENDataPropertyDescriptor(NewElement,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
+       TBESENObject(BESENValueObject(Val)).DefineOwnProperty(BESENArrayIndexToStr(i),BESENDataPropertyDescriptor(NewElement,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
       end;
       inc(i);
      end;
@@ -100,7 +100,7 @@ var Root,Recviver:TBESENObject;
       Enumerator:=nil;
       PropKey:='';
       try
-       Enumerator:=TBESENObject(Val.Obj).Enumerator(true,false);
+       Enumerator:=TBESENObject(BESENValueObject(Val)).Enumerator(true,false);
        Enumerator.Reset;
        while Enumerator.GetNext(PropKey) do begin
         if i>=length(Keys) then begin
@@ -115,11 +115,11 @@ var Root,Recviver:TBESENObject;
       i:=0;
       while i<length(Keys) do begin
        p:=Keys[i];
-       Walk(TBESENObject(Val.Obj),p,NewElement);
-       if NewElement.ValueType=bvtUNDEFINED then begin
-        TBESENObject(Val.Obj).Delete(p,false);
+       Walk(TBESENObject(BESENValueObject(Val)),p,NewElement);
+       if BESENValueType(NewElement)=bvtUNDEFINED then begin
+        TBESENObject(BESENValueObject(Val)).Delete(p,false);
        end else begin
-        TBESENObject(Val.Obj).DefineOwnProperty(p,BESENDataPropertyDescriptor(NewElement,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
+        TBESENObject(BESENValueObject(Val)).DefineOwnProperty(p,BESENDataPropertyDescriptor(NewElement,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
        end;
        inc(i);
       end;
@@ -131,8 +131,7 @@ var Root,Recviver:TBESENObject;
     o.GarbageCollectorUnlock;
    end;
   end;
-  Temp.ValueType:=bvtSTRING;
-  Temp.Str:=Name;
+  Temp:=BESENStringValue(Name);
   ValuePointers[0]:=@Temp;
   ValuePointers[1]:=@Val;
   TBESEN(Instance).ObjectCall(Recviver,BESENObjectValue(Holder),@ValuePointers,2,rv);
@@ -144,7 +143,7 @@ begin
   ResultValue:=BESENUndefinedValue;
  end;
  if (CountArguments>1) and BESENIsCallable(Arguments^[1]^) then begin
-  Recviver:=TBESENObject(Arguments^[1]^.Obj);
+  Recviver:=TBESENObject(BESENValueObject(Arguments^[1]^));
   Root:=TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype);
   TBESEN(Instance).GarbageCollector.Add(Root);
   Root.GarbageCollectorLock;
@@ -179,45 +178,43 @@ var Value,Replacer,Space,v:TBESENValue;
  begin
   Keys:=nil;
   Holder.Get(Key,Value);
-  if Value.ValueType=bvtOBJECT then begin
-   TBESENObject(Value.Obj).Get('toJSON',toJSON);
+  if BESENValueType(Value)=bvtOBJECT then begin
+   TBESENObject(BESENValueObject(Value)).Get('toJSON',toJSON);
    iF BESENIsCallable(toJSON) then begin
-    v.ValueType:=bvtSTRING;
-    v.Str:=Key;
+    v:=BESENStringValue(Key);
     ValuePointers[0]:=@v;
-    TBESEN(Instance).ObjectCall(TBESENObject(toJSON.Obj),Value,@ValuePointers,1,Temp);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(toJSON)),Value,@ValuePointers,1,Temp);
     BESENCopyValue(Value,Temp);
    end;
   end;
   if assigned(ReplacerFunction) then begin
-   v.ValueType:=bvtSTRING;
-   v.Str:=Key;
+   v:=BESENStringValue(Key);
    ValuePointers[0]:=@v;
    ValuePointers[1]:=@Value;
    TBESEN(Instance).ObjectCall(ReplacerFunction,BESENObjectValue(Holder),@ValuePointers,2,Temp);
    BESENCopyValue(Value,Temp);
   end;
-  if (Value.ValueType=bvtOBJECT) and not assigned(Value.Obj) then begin
-   Value.ValueType:=bvtNULL;
+  if (BESENValueType(Value)=bvtOBJECT) and not assigned(BESENValueObject(Value)) then begin
+   Value:=BESENNullValue;
   end;
-  if Value.ValueType=bvtOBJECT then begin
-   if Value.Obj is TBESENObjectNumber then begin
+  if BESENValueType(Value)=bvtOBJECT then begin
+   if TBESENObject(BESENValueObject(Value)) is TBESENObjectNumber then begin
     TBESEN(Instance).ToNumberValue(Value,Temp);
     BESENCopyValue(Value,Temp);
-   end else if Value.Obj is TBESENObjectString then begin
+   end else if TBESENObject(BESENValueObject(Value)) is TBESENObjectString then begin
     TBESEN(Instance).ToStringValue(Value,Temp);
     BESENCopyValue(Value,Temp);
-   end else if Value.Obj is TBESENObjectBoolean then begin
+   end else if TBESENObject(BESENValueObject(Value)) is TBESENObjectBoolean then begin
     TBESEN(Instance).ToPrimitiveValue(Value,Temp);
     BESENCopyValue(Value,Temp); 
    end;
   end;
-  case Value.ValueType of
+  case BESENValueType(Value) of
    bvtNULL:begin
     rv:=BESENStringValue('null');
    end;
    bvtBOOLEAN:begin
-    if Value.Bool then begin
+    if BESENValueBoolean(Value) then begin
      rv:=BESENStringValue('true');
     end else begin
      rv:=BESENStringValue('false');
@@ -227,23 +224,23 @@ var Value,Replacer,Space,v:TBESENValue;
     rv:=BESENStringValue(BESENJSONStringQuote(TBESEN(Instance).ToStr(Value)));
    end;
    bvtNUMBER:begin
-    if BESENIsFinite(Value.Num) then begin
+    if BESENIsFinite(BESENValueNumber(Value)) then begin
      TBESEN(Instance).ToStringValue(Value,rv);
     end else begin
      rv:=BESENStringValue('null');
     end;
    end;
    bvtOBJECT:begin
-    if Stack.Find(Value.Obj)>=0 then begin
+    if Stack.Find(BESENValueObject(Value))>=0 then begin
      raise EBESENTypeError.Create('Cyclical situation found');
     end;
-    oi:=Stack.Add(Value.Obj);
+    oi:=Stack.Add(BESENValueObject(Value));
     StepBack:=Ident;
     Ident:=Ident+Gap;
     if BESENIsCallable(Value) then begin
      rv:=BESENUndefinedValue;
-    end else if Value.Obj is TBESENObjectArray then begin
-     TBESENObject(Value.Obj).Get('length',Temp,TBESENObject(Value.Obj),BESENLengthHash);
+    end else if TBESENObject(BESENValueObject(Value)) is TBESENObjectArray then begin
+     TBESENObject(BESENValueObject(Value)).Get('length',Temp,TBESENObject(BESENValueObject(Value)),BESENLengthHash);
      j:=TBESEN(Instance).ToUInt32(Temp);
      if j=0 then begin
       Output:='[]';
@@ -255,8 +252,8 @@ var Value,Replacer,Space,v:TBESENValue;
       end;
       i:=0;
       while i<j do begin
-       Str(BESENArrayIndexToStr(i),TBESENObject(Value.Obj),v);
-       if v.ValueType=bvtUNDEFINED then begin
+       Str(BESENArrayIndexToStr(i),TBESENObject(BESENValueObject(Value)),v);
+       if BESENValueType(v)=bvtUNDEFINED then begin
         Output:=Output+'null';
        end else begin
         Output:=Output+TBESEN(Instance).ToStr(v);
@@ -286,7 +283,7 @@ var Value,Replacer,Space,v:TBESENValue;
        Enumerator:=nil;
        PropKey:='';
        try
-        Enumerator:=TBESENObject(Value.Obj).Enumerator(true,false);
+        Enumerator:=TBESENObject(BESENValueObject(Value)).Enumerator(true,false);
         Enumerator.Reset;
         while Enumerator.GetNext(PropKey) do begin
          if j>=length(Keys) then begin
@@ -309,14 +306,14 @@ var Value,Replacer,Space,v:TBESENValue;
        end;
        i:=0;
        while i<j do begin
-        Str(Keys[i],TBESENObject(Value.Obj),v);
+        Str(Keys[i],TBESENObject(BESENValueObject(Value)),v);
         Output:=Output+BESENJSONStringQuote(Keys[i]);
         if length(Ident)>0 then begin
          Output:=Output+': ';
         end else begin
          Output:=Output+':';
         end;
-        if v.ValueType=bvtUNDEFINED then begin
+        if BESENValueType(v)=bvtUNDEFINED then begin
          Output:=Output+'null';
         end else begin
          Output:=Output+TBESEN(Instance).ToStr(v);
@@ -367,19 +364,19 @@ begin
    Replacer:=BESENUndefinedValue;
   end;
   HasPropertyList:=false;
-  if (Replacer.ValueType=bvtOBJECT) and assigned(Replacer.Obj) then begin
+  if (BESENValueType(Replacer)=bvtOBJECT) and assigned(BESENValueObject(Replacer)) then begin
    if BESENIsCallable(Replacer) then begin
-    ReplacerFunction:=TBESENObject(Replacer.Obj);
-   end else if Replacer.Obj is TBESENObjectArray then begin
+    ReplacerFunction:=TBESENObject(BESENValueObject(Replacer));
+   end else if TBESENObject(BESENValueObject(Replacer)) is TBESENObjectArray then begin
     PropertyListStringTree:=TBESENStringTree.Create;
     try
      HasPropertyList:=true;
-     PropItem:=TBESENObject(Replacer.Obj).Properties.First;
+     PropItem:=TBESENObject(BESENValueObject(Replacer)).Properties.First;
      k:=0;
      while assigned(PropItem) do begin
       if (boppENUMERABLE in PropItem.Descriptor.Presents) and (bopaENUMERABLE in PropItem.Descriptor.Attributes) and BESENArrayToIndex(PropItem.Key,i) then begin
-       TBESENObject(Replacer.Obj).Get(PropItem.Key,v);
-       if (v.ValueType in [bvtSTRING,bvtNUMBER]) or ((v.ValueType=bvtOBJECT) and assigned(TBESENObject(v.Obj)) and ((TBESENObject(v.Obj) is TBESENObjectString) or (TBESENObject(v.Obj) is TBESENObjectNumber))) then begin
+       TBESENObject(BESENValueObject(Replacer)).Get(PropItem.Key,v);
+       if (BESENValueType(v) in [bvtSTRING,bvtNUMBER]) or ((BESENValueType(v)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(v))) and ((TBESENObject(BESENValueObject(v)) is TBESENObjectString) or (TBESENObject(BESENValueObject(v)) is TBESENObjectNumber))) then begin
         vs:=TBESEN(Instance).ToStr(v);
         if not PropertyListStringTree.Find(vs,PropertyListStringTreeData) then begin
          PropertyListStringTreeData.i:=k;
@@ -401,23 +398,23 @@ begin
    end;
   end;
   if CountArguments>2 then begin
-   if (Arguments^[2]^.ValueType=bvtOBJECT) and assigned(Arguments^[2]^.Obj) then begin
-    if Arguments^[2]^.Obj is TBESENObjectNumber then begin
+   if (BESENValueType(Arguments^[2]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[2]^)) then begin
+    if TBESENObject(BESENValueObject(Arguments^[2]^)) is TBESENObjectNumber then begin
      TBESEN(Instance).ToNumberValue(Arguments^[2]^,Space);
-    end else if Arguments^[2]^.Obj is TBESENObjectString then begin
+    end else if TBESENObject(BESENValueObject(Arguments^[2]^)) is TBESENObjectString then begin
      TBESEN(Instance).ToStringValue(Arguments^[2]^,Space);
     end;
    end else begin
     Space:=Arguments^[2]^;
    end;
-   if Space.ValueType=bvtNumber then begin
+   if BESENValueType(Space)=bvtNUMBER then begin
     j:=min(10,TBESEN(Instance).ToInt(Space));
     i:=0;
     while i<j do begin
      Gap:=Gap+' ';
      inc(i);
     end;
-   end else if Space.ValueType=bvtSTRING then begin
+   end else if BESENValueType(Space)=bvtSTRING then begin
     Gap:=copy(TBESEN(Instance).ToStr(Space),1,10);
    end;
   end;
