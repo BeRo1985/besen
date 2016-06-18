@@ -90,21 +90,19 @@ end;
 procedure TBESENObjectConstructor.Construct(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);
 begin
  if CountArguments>0 then begin
-  case Arguments^[0]^.ValueType of
+  case BESENValueType(Arguments^[0]^) of
    bvtNULL,bvtUNDEFINED:begin
-    AResult.ValueType:=bvtOBJECT;
-    AResult.Obj:=TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype);
+    AResult:=BESENObjectValue(TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype));
    end;
    else begin
     TBESEN(Instance).ToObjectValue(Arguments^[0]^,AResult);
    end;
   end;
  end else begin
-  AResult.ValueType:=bvtOBJECT;
-  AResult.Obj:=TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype);
+  AResult:=BESENObjectValue(TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype));
  end;
- if (AResult.ValueType=bvtOBJECT) and assigned(AResult.Obj) then begin
-  TBESEN(Instance).GarbageCollector.Add(TBESENObject(AResult.Obj));
+ if (BESENValueType(AResult)=bvtOBJECT) and assigned(BESENValueObject(AResult)) then begin
+  TBESEN(Instance).GarbageCollector.Add(TBESENObject(BESENValueObject(AResult)));
  end;
 end;
 
@@ -125,17 +123,17 @@ end;
 
 procedure TBESENObjectConstructor.NativeGetPrototypeOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
- ResultValue:=BESENObjectValueEx(TBESENObject(Arguments^[0]^.Obj).Prototype);
+ ResultValue:=BESENObjectValueEx(TBESENObject(BESENValueObject(Arguments^[0]^)).Prototype);
 end;
 
 procedure TBESENObjectConstructor.NativeGetOwnPropertyDescriptor(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var n:TBESENString;
     Descriptor:TBESENObjectPropertyDescriptor;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  if CountArguments>1 then begin
@@ -143,10 +141,10 @@ begin
  end else begin
   n:='';
  end;
- TBESENObject(Arguments^[0]^.Obj).GetOwnProperty(n,Descriptor);
+ TBESENObject(BESENValueObject(Arguments^[0]^)).GetOwnProperty(n,Descriptor);
  TBESEN(Instance).FromPropertyDescriptor(Descriptor,ResultValue);
- if (ResultValue.ValueType=bvtOBJECT) and assigned(ResultValue.Obj) then begin
-  TBESEN(Instance).GarbageCollector.Add(TBESENObject(ResultValue.Obj));
+ if (BESENValueType(ResultValue)=bvtOBJECT) and assigned(BESENValueObject(ResultValue)) then begin
+  TBESEN(Instance).GarbageCollector.Add(TBESENObject(BESENValueObject(ResultValue)));
  end;
 end;
 
@@ -156,14 +154,14 @@ var ArrayObject:TBESENObjectArray;
     PropItem:TBESENObjectProperty;
     n:longword;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  ArrayObject:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);
  TBESEN(Instance).GarbageCollector.Add(ArrayObject);
  ArrayObject.GarbageCollectorLock;
  try
-  o:=TBESENObject(Arguments^[0]^.Obj);
+  o:=TBESENObject(BESENValueObject(Arguments^[0]^));
   if o is TBESENObjectString then begin
    for n:=1 to length(TBESENObjectString(o).Value) do begin
     ArrayObject.DefineOwnProperty(BESENArrayIndexToStr(n-1),BESENDataPropertyDescriptor(BESENStringValue(BESENArrayIndexToStr(n-1)),[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
@@ -190,30 +188,28 @@ var o:TBESENObject;
     vo:TBESENValue;
     ValuePointers:array[0..1] of PBESENValue;
 begin
- if not ((CountArguments>0) and ((Arguments^[0]^.ValueType=bvtNULL) or ((Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)))) then begin
+ if not ((CountArguments>0) and ((BESENValueType(Arguments^[0]^)=bvtNULL) or ((BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))))) then begin
   raise EBESENTypeError.Create('No object and not null');
  end;
- if Arguments^[0]^.ValueType=bvtNULL then begin
+ if BESENValueType(Arguments^[0]^)=bvtNULL then begin
   o:=TBESENObject.Create(Instance,nil);
  end else begin
-  o:=TBESENObject.Create(Instance,TBESENObject(Arguments^[0]^.Obj));
+  o:=TBESENObject.Create(Instance,TBESENObject(BESENValueObject(Arguments^[0]^)));
  end;
  if CountArguments>1 then begin
-  vo.ValueType:=bvtOBJECT;
-  TBESENObject(vo.Obj):=o;
+  vo:=BESENObjectValue(o);
   ValuePointers[0]:=@vo;
   ValuePointers[1]:=Arguments^[1];
   NativeDefineProperties(ThisArgument,@ValuePointers,CountArguments,ResultValue);
  end;
- ResultValue.ValueType:=bvtOBJECT;
- ResultValue.Obj:=o;
+ ResultValue:=BESENObjectValue(o);
 end;
 
 procedure TBESENObjectConstructor.NativeDefineProperty(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var n:TBESENString;
     Descriptor:TBESENObjectPropertyDescriptor;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  if CountArguments>1 then begin
@@ -226,7 +222,7 @@ begin
  end else begin
   Descriptor:=BESENUndefinedPropertyDescriptor;
  end;
- TBESENObject(Arguments^[0]^.Obj).DefineOwnProperty(n,Descriptor,true);
+ TBESENObject(BESENValueObject(Arguments^[0]^)).DefineOwnProperty(n,Descriptor,true);
  BESENCopyValue(ResultValue,Arguments^[0]^);
 end;
 
@@ -243,7 +239,7 @@ begin
  Descriptors:=nil;
  Enumerator:=nil;
  Key:='';
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  try
@@ -271,7 +267,7 @@ begin
     inc(Count);
    end;
    for i:=0 to Count-1 do begin
-    TBESENObject(Arguments^[0]^.Obj).DefineOwnProperty(Names[i],Descriptors[i],true);
+    TBESENObject(BESENValueObject(Arguments^[0]^)).DefineOwnProperty(Names[i],Descriptors[i],true);
    end;
   finally
    Props.GarbageCollectorUnlock;
@@ -290,23 +286,23 @@ var Descriptor:TBESENObjectPropertyDescriptor;
     Enumerator:TBESENObjectPropertyEnumerator;
     Key:TBESENString;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(BESENValueObject(Arguments^[0]^))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  Enumerator:=nil;
  Key:='';
  try
-  Enumerator:=TBESENObject(Arguments^[0]^.Obj).Enumerator(true,true);
+  Enumerator:=TBESENObject(BESENValueObject(Arguments^[0]^)).Enumerator(true,true);
   Enumerator.Reset;
   while Enumerator.GetNext(Key) do begin
-   TBESENObject(Arguments^[0]^.Obj).GetOwnProperty(Key,Descriptor);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).GetOwnProperty(Key,Descriptor);
    Descriptor.Attributes:=Descriptor.Attributes-[bopaCONFIGURABLE];
-   TBESENObject(Arguments^[0]^.Obj).DefineOwnProperty(Key,Descriptor,true);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).DefineOwnProperty(Key,Descriptor,true);
   end;
  finally
   BESENFreeAndNil(Enumerator);
  end;
- TBESENObject(Arguments^[0]^.Obj).Extensible:=false;
+ TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible:=false;
  BESENCopyValue(ResultValue,Arguments^[0]^);
 end;
 
@@ -315,35 +311,35 @@ var Descriptor:TBESENObjectPropertyDescriptor;
     Enumerator:TBESENObjectPropertyEnumerator;
     Key:TBESENString;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  Enumerator:=nil;
  Key:='';
  try
-  Enumerator:=TBESENObject(Arguments^[0]^.Obj).Enumerator(true,true);
+  Enumerator:=TBESENObject(BESENValueObject(Arguments^[0]^)).Enumerator(true,true);
   Enumerator.Reset;
   while Enumerator.GetNext(Key) do begin
-   TBESENObject(Arguments^[0]^.Obj).GetOwnProperty(Key,Descriptor);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).GetOwnProperty(Key,Descriptor);
    if ([boppVALUE,boppWRITABLE]*Descriptor.Presents)<>[] then begin
     Descriptor.Attributes:=Descriptor.Attributes-[bopaWRITABLE];
    end;
    Descriptor.Attributes:=Descriptor.Attributes-[bopaCONFIGURABLE];
-   TBESENObject(Arguments^[0]^.Obj).DefineOwnProperty(Key,Descriptor,true);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).DefineOwnProperty(Key,Descriptor,true);
   end;
  finally
   BESENFreeAndNil(Enumerator);
  end;
- TBESENObject(Arguments^[0]^.Obj).Extensible:=false;
+ TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible:=false;
  BESENCopyValue(ResultValue,Arguments^[0]^);
 end;
 
 procedure TBESENObjectConstructor.NativePreventExtensions(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
- TBESENObject(Arguments^[0]^.Obj).Extensible:=false;
+ TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible:=false;
  BESENCopyValue(ResultValue,Arguments^[0]^);
 end;
 
@@ -353,17 +349,17 @@ var Descriptor:TBESENObjectPropertyDescriptor;
     Key:TBESENString;
     IsSealed:boolean;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  IsSealed:=true;
  Enumerator:=nil;
  Key:='';
  try
-  Enumerator:=TBESENObject(Arguments^[0]^.Obj).Enumerator(true,true);
+  Enumerator:=TBESENObject(BESENValueObject(Arguments^[0]^)).Enumerator(true,true);
   Enumerator.Reset;
   while Enumerator.GetNext(Key) do begin
-   TBESENObject(Arguments^[0]^.Obj).GetOwnProperty(Key,Descriptor);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).GetOwnProperty(Key,Descriptor);
    if (boppCONFIGURABLE In Descriptor.Presents) and (bopaCONFIGURABLE In Descriptor.Attributes) then begin
     IsSealed:=false;
     break;
@@ -372,11 +368,10 @@ begin
  finally
   BESENFreeAndNil(Enumerator);
  end;
- if TBESENObject(Arguments^[0]^.Obj).Extensible then begin
+ if TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible then begin
   IsSealed:=false;
  end;
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=IsSealed;
+ ResultValue:=BESENBooleanValue(IsSealed);
 end;
 
 procedure TBESENObjectConstructor.NativeIsFrozen(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
@@ -385,17 +380,17 @@ var Descriptor:TBESENObjectPropertyDescriptor;
     Key:TBESENString;
     IsFrozen:boolean;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  IsFrozen:=true;
  Enumerator:=nil;
  Key:='';
  try
-  Enumerator:=TBESENObject(Arguments^[0]^.Obj).Enumerator(true,true);
+  Enumerator:=TBESENObject(BESENValueObject(Arguments^[0]^)).Enumerator(true,true);
   Enumerator.Reset;
   while Enumerator.GetNext(Key) do begin
-   TBESENObject(Arguments^[0]^.Obj).GetOwnProperty(Key,Descriptor);
+   TBESENObject(BESENValueObject(Arguments^[0]^)).GetOwnProperty(Key,Descriptor);
    if ((([boppVALUE,boppWRITABLE]*Descriptor.Presents)<>[]) and ((boppWRITABLE In Descriptor.Presents) and (bopaWRITABLE In Descriptor.Attributes))) or
       ((boppCONFIGURABLE In Descriptor.Presents) and (bopaCONFIGURABLE In Descriptor.Attributes)) then begin
     IsFrozen:=false;
@@ -405,20 +400,18 @@ begin
  finally
   BESENFreeAndNil(Enumerator);
  end;
- if TBESENObject(Arguments^[0]^.Obj).Extensible then begin
+ if TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible then begin
   IsFrozen:=false;
  end;
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=IsFrozen;
+ ResultValue:=BESENBooleanValue(IsFrozen);
 end;
 
 procedure TBESENObjectConstructor.NativeIsExtensible(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=TBESENObject(Arguments^[0]^.Obj).Extensible;
+ ResultValue:=BESENBooleanValue(TBESENObject(BESENValueObject(Arguments^[0]^)).Extensible);
 end;
 
 procedure TBESENObjectConstructor.NativeKeys(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
@@ -427,7 +420,7 @@ var ArrayObject:TBESENObjectArray;
     Key:TBESENString;
     Index:longword;
 begin
- if not ((CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(TBESENObject(Arguments^[0]^.Obj))) then begin
+ if not ((CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(Arguments^[0]^)))) then begin
   raise EBESENTypeError.Create('No object');
  end;
  ArrayObject:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);
@@ -438,7 +431,7 @@ begin
   Enumerator:=nil;
   Key:='';
   try
-   Enumerator:=TBESENObject(Arguments^[0]^.Obj).Enumerator(true,false);
+   Enumerator:=TBESENObject(BESENValueObject(Arguments^[0]^)).Enumerator(true,false);
    Enumerator.Reset;
    while Enumerator.GetNext(Key) do begin
     ArrayObject.DefineOwnProperty(BESENArrayIndexToStr(Index),BESENDataPropertyDescriptor(BESENStringValue(Key),[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
