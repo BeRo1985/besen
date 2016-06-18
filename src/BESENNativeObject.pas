@@ -210,7 +210,7 @@ begin
        end;
 {$endif}
        Prop.PropIndex:=i;
-       Prop.Descriptor.Value.ValueType:=bvtUNDEFINED;
+       Prop.Descriptor.Value:=BESENUndefinedValue;
        Prop.Descriptor.Getter:=nil;
        Prop.Descriptor.Setter:=nil;
        if assigned(Item^.SetProc) then begin

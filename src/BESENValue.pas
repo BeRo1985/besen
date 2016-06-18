@@ -33,7 +33,7 @@ unit BESENValue;
 
 interface
 
-uses BESENConstants,BESENTypes,BESENStringUtils,BESENCharSet,Variants;
+uses BESENConstants,BESENTypes,BESENStringUtils,BESENCharSet,Variants,BESENGarbageCollector;
 
 const brbvtUNDEFINED=0;
       brbvtBOOLEAN=1;
@@ -44,20 +44,34 @@ const brbvtUNDEFINED=0;
 
       brbvtFIRST=brbvtUNDEFINED;
       brbvtLAST=brbvtENVREC;
+                                
+      BESENValueSignalingNaNMask=TBESENUInt64($7ff8000000000000);
+      BESENValueSignalingNaNMaskValue=TBESENUInt64($7ff0000000000000);
+      BESENValueSignalingNaNMantissaMask=TBESENUInt64($0007ffffffffffff);
+      BESENValueSignalingNaNValueTypeMask=TBESENUInt64($0007000000000000);
+      BESENValueSignalingNaNValueTypeShift=48;
+      BESENValueSignalingNaNValueTypeShiftMask=7;
+      BESENValueSignalingNaNValueTagMask=TBESENUInt64($0000ffffffffffff);
 
-      bvtUNDEFINED=0;
-      bvtNULL=1;
-      bvtBOOLEAN=2;
-      bvtNUMBER=3;
-      bvtSTRING=4;
-      bvtOBJECT=5;
-      bvtREFERENCE=6;
-      bvtLOCAL=7;
-      bvtENVREC=8;
-      bvtNONE=9;
+type PBESENValueType=^TBESENValueType;
+     TBESENValueType=(
+      bvtUNDEFINED=0,
+      bvtNULL=1,
+      bvtBOOLEAN=2,
+      bvtSTRING=3,
+      bvtOBJECT=4,
+      bvtREFERENCE=5,
+      bvtLOCAL=6,
+      bvtENVREC=7,
+      ////////////
+      bvtNUMBER=8,  // must be after 7, because all other values must be inside the 3-bit 0..7 range, for the NaN-boxing
+      ////////////
+      bvtFIRST=bvtUNDEFINED,
+      bvtLAST=bvtNUMBER
+     );
 
-      bvtFIRST=bvtUNDEFINED;
-      bvtLAST=bvtNONE;
+const BESENUndefinedValueRaw=TBESENUInt64(BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtUNDEFINED)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
+      BESEBNullValueRaw=TBESENUInt64(BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtNULL)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
 
 type TBESENReferenceBaseValueType=ptruint;
 
@@ -91,56 +105,24 @@ type TBESENReferenceBaseValueType=ptruint;
        );
      end;
 
-     TBESENValueType=ptruint;
+     TBESENValueString=class(TBESENGarbageCollectorObject)
+      public
+       Str:TBESENString;
+     end;
 
-     PBESENValue=^TBESENValue;
-     TBESENValue=record
-      Str:TBESENString;
-      ReferenceBase:TBESENReferenceBaseValue;
-{$ifdef BESENEmbarcaderoNextGen}
-      Obj:TObject;
-      EnvRec:TObject;
-{$endif}
-      case ValueType:TBESENValueType of
-       bvtUNDEFINED:(
-       );
-       bvtNULL:(
-       );
-       bvtBOOLEAN:(
-        Bool:TBESENBoolean;
-       );
-       bvtNUMBER:(
-        Num:TBESENNumber;
-       );
-       bvtSTRING:(
-       );
-       bvtOBJECT:(
-{$ifndef BESENEmbarcaderoNextGen}
-        Obj:TObject;
-{$endif}
-       );
-       bvtREFERENCE:(
-        ReferenceIsStrict:longbool;
-        ReferenceHash:TBESENHash;
-        ReferenceIndex:TBESENINT32;
-        ReferenceID:TBESENINT32;
-       );
-       bvtLOCAL:(
-        LocalIndex:TBESENINT32;
-       );
-       bvtENVREC:(
-{$ifndef BESENEmbarcaderoNextGen}
-        EnvRec:TObject;
-{$endif}
-       );
-       bvtNONE:(
-       );
+     TBESENValueReference=class(TBESENGarbageCollectorObject)
+      public
+       ReferenceBase:double;
+       ReferenceIsStrict:longbool;
+       ReferenceHash:TBESENHash;
+       ReferenceIndex:TBESENINT32;
+       ReferenceID:TBESENINT32;
      end;
 
      TBESENValueTypes=array of TBESENValueType;
 
      TBESENValueTypesItems=array of TBESENValueTypes;
-     
+
      TBESENValues=array of TBESENValue;
 
      TBESENValuePointers=array of PBESENValue;
@@ -169,6 +151,15 @@ type TBESENReferenceBaseValueType=ptruint;
      TBESENRefBaseValueToCallThisArgValueProc=procedure(var Dest:TBESENValue;const Src:TBESENReferenceBaseValue);
 
      TBESENRefBaseValueToCallThisArgValueProcs=array[brbvtFIRST..brbvtLAST] of TBESENRefBaseValueToCallThisArgValueProc;
+
+function BESENValueType(const v:TBESENValue):TBESENValueType; {$ifdef caninline}inline;{$endif}
+function BESENValueTag(const v:TBESENValue):TBESENUInt64; {$ifdef caninline}inline;{$endif}
+function BESENValueNumber(const v:TBESENValue):TBESENNumber; {$ifdef caninline}inline;{$endif}
+function BESENValueBoolean(const v:TBESENValue):longbool; {$ifdef caninline}inline;{$endif}
+function BESENValuePointer(const v:TBESENValue):pointer; {$ifdef caninline}inline;{$endif}
+function BESENValueString(const v:TBESENValue):TBESENString; {$ifdef caninline}inline;{$endif}
+function BESENValueObject(const v:TBESENValue):pointer; {$ifdef caninline}inline;{$endif}
+function BESENValueReference(const v:TBESENValue):TBESENValueReference; {$ifdef caninline}inline;{$endif}
 
 procedure BESENCopyReferenceBaseValueUndefined(var Dest:TBESENReferenceBaseValue;const Src:TBESENReferenceBaseValue); {$ifdef UseRegister}register;{$endif}
 procedure BESENCopyReferenceBaseValueBoolean(var Dest:TBESENReferenceBaseValue;const Src:TBESENReferenceBaseValue); {$ifdef UseRegister}register;{$endif}
@@ -237,8 +228,7 @@ const BESENCopyReferenceBaseValueProcs:TBESENCopyReferenceBaseValueProcs=(BESENC
                                                 BESENCopyValueObject,
                                                 BESENCopyValueReference,
                                                 BESENCopyValueLocal,
-                                                BESENCopyValueEnvRec,
-                                                BESENCopyValueNone);
+                                                BESENCopyValueEnvRec);
 
       BESENValueToRefBaseValueProcs:TBESENValueToRefBaseValueProcs=(BESENValueToRefBaseValueUndefined,
                                                                     BESENValueToRefBaseValueNull,
@@ -248,8 +238,7 @@ const BESENCopyReferenceBaseValueProcs:TBESENCopyReferenceBaseValueProcs=(BESENC
                                                                     BESENValueToRefBaseValueObject,
                                                                     BESENValueToRefBaseValueReference,
                                                                     BESENValueToRefBaseValueLocal,
-                                                                    BESENValueToRefBaseValueEnvRec,
-                                                                    BESENValueToRefBaseValueNone);
+                                                                    BESENValueToRefBaseValueEnvRec);
 
       BESENRefBaseValueToValueProcs:TBESENRefBaseValueToValueProcs=(BESENRefBaseValueToValueUndefined,
                                                                     BESENRefBaseValueToValueBoolean,
@@ -268,16 +257,16 @@ const BESENCopyReferenceBaseValueProcs:TBESENCopyReferenceBaseValueProcs=(BESENC
 function BESENValueToVariant(const v:TBESENValue):Variant;
 procedure BESENVariantToValue(const vt:Variant;var v:TBESENValue);
 
-function BESENBooleanValue(const Bool:TBESENBoolean):TBESENValue;
-function BESENNumberValue(const Num:TBESENNumber):TBESENValue;
+function BESENBooleanValue(const Bool:TBESENBoolean):TBESENValue; {$ifdef caninline}inline;{$endif}
+function BESENNumberValue(const Num:TBESENNumber):TBESENValue; {$ifdef caninline}inline;{$endif}
 function BESENStringValue(const Str:TBESENString):TBESENValue;
 {$ifndef BESENSingleStringType}
 function BESENStringLocaleCharsetValue(const Str:TBESENAnsiString):TBESENValue;
 {$endif}
-function BESENObjectValue(const Obj:TObject):TBESENValue;
-function BESENObjectValueEx(const Obj:TObject):TBESENValue;
+function BESENObjectValue(const Obj:TObject):TBESENValue; {$ifdef caninline}inline;{$endif}
+function BESENObjectValueEx(const Obj:TObject):TBESENValue; {$ifdef caninline}inline;{$endif}
 
-function BESENEqualityExpressionStrictEquals(const a,b:TBESENValue):longbool; 
+function BESENEqualityExpressionStrictEquals(const a,b:TBESENValue):longbool;
 
 var BESENEmptyValue:TBESENValue;
     BESENNullValue:TBESENValue;
@@ -287,6 +276,52 @@ var BESENEmptyValue:TBESENValue;
 implementation
 
 uses BESEN,BESENNumberUtils,BESENEnvironmentRecord;
+
+function BESENValueType(const v:TBESENValue):TBESENValueType; {$ifdef caninline}inline;{$endif}
+begin
+ if (TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNMask)=BESENValueSignalingNaNMaskValue) and
+    (TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNMantissaMask)<>0) then begin
+  result:=TBESENValueType(TBESENInt32(TBESENUInt32(TBESENUInt64(pointer(@v)^) shr BESENValueSignalingNaNValueTypeShift) and BESENValueSignalingNaNValueTypeShiftMask));
+ end else begin
+  result:=bvtNUMBER;
+ end;
+end;
+
+function BESENValueTag(const v:TBESENValue):TBESENUInt64; {$ifdef caninline}inline;{$endif}
+begin
+ result:=TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask;
+end;
+
+function BESENValueNumber(const v:TBESENValue):TBESENNumber; {$ifdef caninline}inline;{$endif}
+begin
+ result:=v;
+end;
+
+function BESENValueBoolean(const v:TBESENValue):longbool; {$ifdef caninline}inline;{$endif}
+begin
+ result:=longbool(longword(TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask));
+end;
+
+function BESENValuePointer(const v:TBESENValue):pointer; {$ifdef caninline}inline;{$endif}
+begin
+ result:=pointer(TBESENPtrUInt(TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask));
+end;
+
+function BESENValueString(const v:TBESENValue):TBESENString; {$ifdef caninline}inline;{$endif}
+begin
+ result:='';
+// result:=pointer(TBESENPtrUInt(TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask));
+end;
+
+function BESENValueObject(const v:TBESENValue):pointer; {$ifdef caninline}inline;{$endif}
+begin
+ result:=pointer(TBESENPtrUInt(TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask));
+end;
+
+function BESENValueReference(const v:TBESENValue):TBESENValueReference; {$ifdef caninline}inline;{$endif}
+begin
+ result:=pointer(TBESENPtrUInt(TBESENUInt64(pointer(@v)^) and BESENValueSignalingNaNValueTagMask));
+end;
 
 procedure BESENCopyReferenceBaseValueUndefined(var Dest:TBESENReferenceBaseValue;const Src:TBESENReferenceBaseValue); {$ifdef UseRegister}register;{$endif}
 begin
@@ -616,13 +651,13 @@ begin
 end;
 {$endif}
 
-function BESENObjectValue(const Obj:TObject):TBESENValue;
+function BESENObjectValue(const Obj:TObject):TBESENValue; {$ifdef caninline}inline;{$endif}
 begin
  result.ValueType:=bvtOBJECT;
  result.Obj:=Obj;
 end;
 
-function BESENObjectValueEx(const Obj:TObject):TBESENValue;
+function BESENObjectValueEx(const Obj:TObject):TBESENValue; {$ifdef caninline}inline;{$endif}
 begin
  if assigned(Obj) then begin
   result.ValueType:=bvtOBJECT;
@@ -632,7 +667,7 @@ begin
  end;
 end;
 
-function BESENObjectValueEx2(const Obj:TObject):TBESENValue;
+function BESENObjectValueEx2(const Obj:TObject):TBESENValue; {$ifdef caninline}inline;{$endif}
 begin
  if assigned(Obj) then begin
   result.ValueType:=bvtOBJECT;
@@ -685,13 +720,10 @@ end;
 
 procedure InitBESEN;
 begin
- fillchar(BESENEmptyValue,sizeof(TBESENValue),#0);
- fillchar(BESENNullValue,sizeof(TBESENValue),#0);
- fillchar(BESENUndefinedValue,sizeof(TBESENValue),#0);
- BESENEmptyValue.ValueType:=bvtUNDEFINED;
- BESENNullValue.ValueType:=bvtNULL;
- BESENUndefinedValue.ValueType:=bvtUNDEFINED;
- BESENDummyValue:=BESENEmptyValue;
+ TBESENUInt64(pointer(@BESENEmptyValue)^):=BESENUndefinedValueRaw;
+ TBESENUInt64(pointer(@BESENNullValue)^):=BESENNullValueRaw;
+ TBESENUInt64(pointer(@BESENUndefinedValue)^):=BESENUndefinedValueRaw;
+ TBESENUInt64(pointer(@BESENDummyValue)^):=BESENUndefinedValueRaw;
 end;
 
 procedure DoneBESEN;

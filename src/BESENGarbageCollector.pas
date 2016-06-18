@@ -34,7 +34,7 @@ unit BESENGarbageCollector;
 interface
 
 uses BESENConstants,BESENTypes,BESENBaseObject,BESENCollectorObject,
-     BESENPointerSelfBalancedTree,BESENValue;
+     BESENPointerSelfBalancedTree;
 
 type TBESENGarbageCollectorObjectList=class;
 
@@ -154,7 +154,7 @@ implementation
 
 uses BESEN,BESENUtils,BESENObject,BESENEnvironmentRecord,
      BESENASTNodes,BESENCode,BESENContext,
-     BESENObjectDeclaredFunction;
+     BESENObjectDeclaredFunction,BESENValue;
 
 constructor TBESENGarbageCollectorObject.Create(AInstance:TObject);
 begin

@@ -121,22 +121,19 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
  begin
   case n.NodeType of
    bntBOOLEANLITERAL:begin
-    v.ValueType:=bvtBOOLEAN;
-    v.Bool:=TBESENASTNodeBooleanLiteral(n).Value;
+    v:=BESENBooleanValue(TBESENASTNodeBooleanLiteral(n).Value);
     result:=true;
    end;
    bntNUMBERLITERAL:begin
-    v.ValueType:=bvtNUMBER;
-    v.Num:=TBESENASTNodeNumberLiteral(n).Value;
+    v:=BESENNumberValue(TBESENASTNodeNumberLiteral(n).Value);
     result:=true;
    end;
    bntSTRINGLITERAL:begin
-    v.ValueType:=bvtSTRING;
-    v.Str:=TBESENASTNodeStringLiteral(n).Value;
+    v:=BESENStringValue(TBESENASTNodeStringLiteral(n).Value);
     result:=true;
    end;
    else begin
-    v.ValueType:=bvtNONE;
+    v:=BESENUndefinedValue;
     result:=false;
    end;
   end;
@@ -2077,7 +2074,7 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
       TBESENASTNodeLogicalAndExpression(ToVisit).RightExpression:=pointer(Visit(TBESENASTNodeLogicalAndExpression(ToVisit).RightExpression));
       if ConvertToValue(TBESENASTNodeLogicalAndExpression(ToVisit).LeftExpression,vl) then begin
        ConvertToValue(TBESENASTNodeLogicalAndExpression(ToVisit).RightExpression,vr);
-       if vl.ValueType=vr.ValueType then begin
+       if BESENValueType(vl)=BESENValueType(vr) then begin
         if TBESEN(Instance).ToBool(vr) then begin
          result:=TBESENASTNodeLogicalAndExpression(ToVisit).LeftExpression;
          AddTrashNode(result,TBESENASTNodeLogicalAndExpression(ToVisit).RightExpression);
@@ -2113,7 +2110,7 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
       TBESENASTNodeLogicalOrExpression(ToVisit).RightExpression:=pointer(Visit(TBESENASTNodeLogicalOrExpression(ToVisit).RightExpression));
       if ConvertToValue(TBESENASTNodeLogicalOrExpression(ToVisit).LeftExpression,vl) then begin
        ConvertToValue(TBESENASTNodeLogicalOrExpression(ToVisit).RightExpression,vr);
-       if vl.ValueType=vr.ValueType then begin
+       if BESENValueType(vl)=BESENValueType(vr) then begin
         if TBESEN(Instance).ToBool(vr) then begin
          result:=TBESENASTNodeLogicalOrExpression(ToVisit).RightExpression;
          AddTrashNode(result,TBESENASTNodeLogicalOrExpression(ToVisit).LeftExpression);
@@ -5404,8 +5401,7 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
       if DestRegNr<0 then begin
        DestRegNr:=CodeGeneratorContext.AllocateRegister;
       end;
-      v.ValueType:=bvtBOOLEAN;
-      v.Bool:=TBESENASTNodeBooleanLiteral(ToVisit).Value;
+      v:=BESENBooleanValue(TBESENASTNodeBooleanLiteral(ToVisit).Value);
       Code.GenLiteral(v,DestRegNr);
       CodeGeneratorContext.Registers[DestRegNr].IsWhat:=bcgtBOOLEAN;
      end;
@@ -5809,8 +5805,7 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
         v:=BESENStringValue(TBESEN(Instance).ToStr(v));
         Code.GenLiteral(v,r3);
        end else if TBESENASTNodePropertyExpression(ToVisit).RightExpression is TBESENASTNodeBooleanLiteral then begin
-        v.ValueType:=bvtBOOLEAN;
-        v.Bool:=TBESENASTNodeBooleanLiteral(TBESENASTNodePropertyExpression(ToVisit).RightExpression).Value;
+        v:=BESENBooleanValue(TBESENASTNodeBooleanLiteral(TBESENASTNodePropertyExpression(ToVisit).RightExpression).Value);
         v:=BESENStringValue(TBESEN(Instance).ToStr(v));
         Code.GenLiteral(v,r3);
        end else if TBESENASTNodePropertyExpression(ToVisit).RightExpression is TBESENASTNodeNullLiteral then begin
@@ -5824,7 +5819,7 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
        if not IsValueObject(r1) then begin
         Code.GenOp(bopCHECKOBJECTCOERCIBLE,r2);
        end;
-       Hash:=BESENHashKey(v.Str);
+       Hash:=BESENHashKey(BESENValueString(v));
        Code.GenOp(bopREF,DestRegNr,r2,r3,TBESEN(Instance).KeyIDManager.Get(v.Str,Hash),Hash,Code.GenPolymorphicInlineCacheInstruction,-1,-1,-1,-1);
        CodeGeneratorContext.DeallocateRegister(r1);
        CodeGeneratorContext.DeallocateRegister(r2);

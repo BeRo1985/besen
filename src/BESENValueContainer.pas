@@ -33,7 +33,7 @@ unit BESENValueContainer;
 
 interface
 
-uses BESENValue,BESENGarbageCollector;
+uses BESENTypes,BESENValue,BESENGarbageCollector;
 
 type TBESENValueContainer=class(TBESENGarbageCollectorObject)
       public

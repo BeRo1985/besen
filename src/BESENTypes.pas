@@ -97,34 +97,50 @@ type{$ifdef BESENSingleStringType}
 {$endif}
 {$endif}
 
+     PBESENInt8=^TBESENInt8;
+     TBESENInt8={$ifdef fpc}Int8{$else}shortint{$endif};
+
+     PBESENUInt8=^TBESENUInt8;
+     TBESENUInt8={$ifdef fpc}UInt8{$else}byte{$endif};
+
+     PBESENInt16=^TBESENInt16;
+     TBESENInt16={$ifdef fpc}Int16{$else}smallint{$endif};
+
+     PBESENUInt16=^TBESENUInt16;
+     TBESENUInt16={$ifdef fpc}UInt16{$else}word{$endif};
+
+     PBESENInt32=^TBESENInt32;
+     TBESENInt32={$ifdef fpc}Int32{$else}longint{$endif};
+
+     PBESENUInt32=^TBESENUInt32;
+     TBESENUInt32={$ifdef fpc}UInt32{$else}longword{$endif};
+
+     PBESENInt64=^TBESENInt64;
+     TBESENInt64=Int64;
+
+     PBESENUInt64=^TBESENUInt64;
+     TBESENUInt64=UInt64;
+
+     PBESENDouble=^TBESENDouble;
+     TBESENDouble=Double;
+
+     PBESENDoubleBytes=^TBESENDoubleBytes;
+     TBESENDoubleBytes=array[0..SizeOf(TBESENDouble)-1] of byte;
+
+     PBESENValue=^TBESENValue;
+     TBESENValue=Double;
+     
      TBESENParsingNumberType={$ifdef HAS_TYPE_EXTENDED}extended{$else}double{$endif};
 
      PBESENNumber=^TBESENNumber;
-     TBESENNumber=double;
+     TBESENNumber=TBESENDouble;
 
      TBESENBoolean=longbool;
 
-     TBESENDate=TBEsenNumber;
+     TBESENDate=TBESENNumber;
 
      PBESENString=^TBESENString;
      TBESENString=TBESENUTF16STRING;
-
-     TBESENINT16=smallint;
-     TBESENUINT16=word;
-
-     PBESENINT32=^TBESENINT32;
-     TBESENINT32=longint;
-
-     PBESENUINT32=^TBESENUINT32;
-     TBESENUINT32=longword;
-
-     PBESENINT64=^TBESENINT64;
-     TBESENINT64=int64;
-
-{$ifdef fpc}
-     PBESENQWORD=^TBESENQWORD;
-     TBESENQWORD=qword;
-{$endif}
 
      TBESENHash=TBESENUINT32;
 
@@ -161,9 +177,9 @@ type{$ifdef BESENSingleStringType}
      PBESENDoubleHiLo=^TBESENDoubleHiLo;
      TBESENDoubleHiLo=packed record
 {$ifdef BIG_ENDIAN}
-      Hi,Lo:longword;
+      Hi,Lo:TBESENUInt32;
 {$else}
-      Lo,Hi:longword;
+      Lo,Hi:TBESENUInt32;
 {$endif}
      end;
 
