@@ -70,7 +70,7 @@ end;
 function TBESENObjectString.GetEx(const P:TBESENString;var AResult:TBESENValue;var Descriptor:TBESENObjectPropertyDescriptor;Base:TBESENObject=nil;Hash:TBESENHash=0):boolean;
 begin
  result:=false;
- AResult.ValueType:=bvtUNDEFINED;
+ AResult:=BESENUndefinedValue;
  if GetProperty(P,Descriptor,Hash) then begin
   if ([boppVALUE,boppWRITABLE]*Descriptor.Presents)<>[] then begin
    if boppVALUE in Descriptor.Presents then begin
@@ -92,7 +92,7 @@ var Index:int64;
     v:TBESENValue;
 begin
  // ES5 errata fix
- Descriptor.Value.ValueType:=BESENUndefinedPropertyDescriptor.Value.ValueType;
+ Descriptor.Value:=BESENUndefinedPropertyDescriptor.Value;
  Descriptor.Getter:=BESENUndefinedPropertyDescriptor.Getter;
  Descriptor.Setter:=BESENUndefinedPropertyDescriptor.Setter;
  Descriptor.Attributes:=BESENUndefinedPropertyDescriptor.Attributes;
@@ -100,11 +100,10 @@ begin
  result:=inherited GetOwnProperty(P,Descriptor,Hash);
  if not result then begin
   TBESEN(Instance).ToIntegerValue(BESENStringValue(p),v);
-  if BESENIsFinite(v.Num) then begin
-   Index:=BESENToInt(v.Num);
+  if BESENIsFinite(BESENValueNumber(v)) then begin
+   Index:=BESENToInt(BESENValueNumber(v));
    if (IntToStr(abs(Index))=P) and ((Index>=0) and (Index<length(Value))) then begin
-    Descriptor.Value.ValueType:=bvtSTRING;
-    Descriptor.Value.Str:=copy(Value,Index+1,1);
+    Descriptor.Value:=BESENStringValue(copy(Value,Index+1,1));
     Descriptor.Getter:=nil;
     Descriptor.Setter:=nil;
     Descriptor.Attributes:=[bopaENUMERABLE];

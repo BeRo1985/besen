@@ -109,19 +109,19 @@ procedure TBESENObjectArrayPrototype.NativeToString(const ThisArgument:TBESENVal
 var v,ov:TBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('join',v);
+  TBESENObject(BESENValueObject(ov)).Get('join',v);
   if BESENIsCallable(v) then begin
-   TBESEN(Instance).ObjectCall(TBESENObject(v.Obj),ThisArgument,nil,0,ResultValue);
+   TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(v)),ThisArgument,nil,0,ResultValue);
   end else begin
    TBESEN(Instance).ObjectPrototype.NativeToString(ThisArgument,Arguments,CountArguments,ResultValue);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -131,12 +131,12 @@ var ov,v,vo,vs:TBESENValue;
     Separator,s:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
   Separator:=BESENLocaleFormatSettings.ListSeparator;
   s:='';
@@ -146,17 +146,17 @@ begin
     if i>0 then begin
      s:=s+Separator;
     end;
-    TBESENObject(ov.Obj).Get(BESENArrayIndexToStr(i),v);
+    TBESENObject(BESENValueObject(ov)).Get(BESENArrayIndexToStr(i),v);
     TBESEN(Instance).ToObjectValue(v,vo);
-    if (vo.ValueType<>bvtOBJECT) or not assigned(TBESENObject(vo.Obj)) then begin
+    if (BESENValueType(vo)<>bvtOBJECT) or not assigned(TBESENObject(BESENValueObject(vo))) then begin
      raise EBESENTypeError.Create('No valid object');
     end;
-    TBESENObject(vo.Obj).Get('toLocaleString',v);
-    if (v.ValueType<>bvtOBJECT) or not (assigned(TBESENObject(v.Obj)) and TBESENObject(v.Obj).HasCall) then begin
+    TBESENObject(BESENValueObject(vo)).Get('toLocaleString',v);
+    if (BESENValueType(v)<>bvtOBJECT) or not (assigned(TBESENObject(BESENValueObject(v))) and TBESENObject(BESENValueObject(v)).HasCall) then begin
      raise EBESENTypeError.Create('No callable');
     end;
-    TBESEN(Instance).ObjectCall(TBESENObject(v.Obj),vo,nil,0,vs);
-    if v.ValueType<>bvtSTRING then begin
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(v)),vo,nil,0,vs);
+    if BESENValueType(v)<>bvtSTRING then begin
      raise EBESENTypeError.Create('No string');
     end;
     s:=s+TBESEN(Instance).ToStr(vs);
@@ -164,7 +164,7 @@ begin
    end;
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENStringValue(s);
 end;
@@ -178,21 +178,21 @@ var a,eA:TBESENObjectArray;
     i:integer;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  a:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);
  TBESEN(Instance).GarbageCollector.Add(a);
  a.GarbageCollectorLock;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
   e:=BESENEmptyValue;
-  e:=BESENObjectValue(TBESENObject(ov.Obj));
+  e:=BESENObjectValue(TBESENObject(BESENValueObject(ov)));
   n:=0;
   i:=0;
   while true do begin
-   if (e.ValueType=bvtOBJECT) and assigned(e.Obj) and (e.Obj is TBESENObjectArray) then begin
-    eA:=TBESENObjectArray(e.Obj);
+   if (BESENValueType(e)=bvtOBJECT) and assigned(BESENValueObject(e)) and (TBESENObject(BESENValueObject(e)) is TBESENObjectArray) then begin
+    eA:=TBESENObjectArray(BESENValueObject(e));
     eA.Get('length',v,eA,BESENLengthHash);
     l:=TBESEN(Instance).ToUINT32(v);
     k:=0;
@@ -220,7 +220,7 @@ begin
   a.Len:=n;
  finally
   a.GarbageCollectorUnlock;
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENObjectValue(a);
 end;
@@ -232,15 +232,15 @@ var ov,v:TBESENValue;
     Separator,s:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
   v:=BESENEmptyValue;
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
-  UseComma:=(CountArguments=0) or (Arguments^[0]^.ValueType=bvtUNDEFINED);
+  UseComma:=(CountArguments=0) or (BESENValueType(Arguments^[0]^)=bvtUNDEFINED);
   if UseComma then begin
    Separator:=',';
   end else begin
@@ -253,15 +253,15 @@ begin
     if i>0 then begin
      s:=s+Separator;
     end;
-    TBESENObject(ov.Obj).Get(BESENArrayIndexToStr(i),v);
-    if not (v.ValueType in [bvtUNDEFINED,bvtNULL]) then begin
+    TBESENObject(BESENValueObject(ov)).Get(BESENArrayIndexToStr(i),v);
+    if not (BESENValueType(v) in [bvtUNDEFINED,bvtNULL]) then begin
      s:=s+TBESEN(Instance).ToStr(v);
     end;
     inc(i);
    end;
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENStringValue(s);
 end;
@@ -272,25 +272,25 @@ var ov,v:TBESENValue;
     si:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENUndefinedValue;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
   if l=0 then begin
-   TBESENObject(ov.Obj).Put('length',BESENNumberValue(0),true,BESENLengthHash);
+   TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(0),true,BESENLengthHash);
    ResultValue:=BESENUndefinedValue;
   end else begin
    si:=BESENArrayIndexToStr(l-1);
-   TBESENObject(ov.Obj).Get(si,ResultValue);
-   TBESENObject(ov.Obj).Delete(si,true);
-   TBESENObject(ov.Obj).Put('length',BESENNumberValue(l-1),true,BESENLengthHash);
+   TBESENObject(BESENValueObject(ov)).Get(si,ResultValue);
+   TBESENObject(BESENValueObject(ov)).Delete(si,true);
+   TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(l-1),true,BESENLengthHash);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -300,21 +300,21 @@ var ov,v:TBESENValue;
     p:integer;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
   for p:=0 to CountArguments-1 do begin
    BESENArrayCheckTooLong(l,1);
-   TBESENObject(ov.Obj).Put(BESENArrayIndexToStr(l),Arguments^[p]^,true);
+   TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr(l),Arguments^[p]^,true);
    inc(l);
   end;
-  TBESENObject(ov.Obj).Put('length',BESENNumberValue(l),true,BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(l),true,BESENLengthHash);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENNumberValue(l);
 end;
@@ -327,14 +327,14 @@ var ov,uv,lv:TBESENValue;
     ue,le:TBESENBoolean;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
   uv:=BESENEmptyValue;
   lv:=BESENEmptyValue;
-  TBESENObject(ov.Obj).Get('length',lv,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',lv,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(lv);
   middle:=l shr 1;
   lower:=0;
@@ -342,24 +342,24 @@ begin
    upper:=l-(lower+1);
    up:=BESENArrayIndexToStr(upper);
    lp:=BESENArrayIndexToStr(lower);
-   le:=TBESENObject(ov.Obj).Get(lp,lv);
-   ue:=TBESENObject(ov.Obj).Get(up,uv);
+   le:=TBESENObject(BESENValueObject(ov)).Get(lp,lv);
+   ue:=TBESENObject(BESENValueObject(ov)).Get(up,uv);
    if le and ue then begin
-    TBESENObject(ov.Obj).Put(lp,uv,true);
-    TBESENObject(ov.Obj).Put(up,lv,true);
+    TBESENObject(BESENValueObject(ov)).Put(lp,uv,true);
+    TBESENObject(BESENValueObject(ov)).Put(up,lv,true);
    end else if ue and not le then begin
-    TBESENObject(ov.Obj).Put(lp,uv,true);
-    TBESENObject(ov.Obj).Delete(up,true);
+    TBESENObject(BESENValueObject(ov)).Put(lp,uv,true);
+    TBESENObject(BESENValueObject(ov)).Delete(up,true);
    end else if le and not ue then begin
-    TBESENObject(ov.Obj).Put(up,lv,true);
-    TBESENObject(ov.Obj).Delete(lp,true);
+    TBESENObject(BESENValueObject(ov)).Put(up,lv,true);
+    TBESENObject(BESENValueObject(ov)).Delete(lp,true);
    end;
    inc(lower);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
- ResultValue:=BESENObjectValue(TBESENObject(ov.Obj));
+ ResultValue:=BESENObjectValue(TBESENObject(BESENValueObject(ov)));
 end;
 
 procedure TBESENObjectArrayPrototype.NativeShift(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
@@ -368,34 +368,34 @@ var ov,v:TBESENValue;
     fp,tp:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
   if l=0 then begin
-   TBESENObject(ov.Obj).Put('length',BESENNumberValue(0),true,BESENLengthHash);
+   TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(0),true,BESENLengthHash);
    ResultValue:=BESENUndefinedValue;
   end else begin
-   TBESENObject(ov.Obj).Get('0',ResultValue);
+   TBESENObject(BESENValueObject(ov)).Get('0',ResultValue);
    k:=1;
    while k<l do begin
     fp:=BESENArrayIndexToStr(k);
     tp:=BESENArrayIndexToStr(k-1);
-    if TBESENObject(ov.Obj).Get(fp,v) then begin
-     TBESENObject(ov.Obj).Put(tp,v,true);
+    if TBESENObject(BESENValueObject(ov)).Get(fp,v) then begin
+     TBESENObject(BESENValueObject(ov)).Put(tp,v,true);
     end else begin
-     TBESENObject(ov.Obj).Delete(tp,true);
+     TBESENObject(BESENValueObject(ov)).Delete(tp,true);
     end;
     inc(k);
    end;
-   TBESENObject(ov.Obj).Delete(BESENArrayIndexToStr(l-1),true);
-   TBESENObject(ov.Obj).Put('length',BESENNumberValue(l-1),true,BESENLengthHash);
+   TBESENObject(BESENValueObject(ov)).Delete(BESENArrayIndexToStr(l-1),true);
+   TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(l-1),true,BESENLengthHash);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -407,15 +407,15 @@ var a:TBESENObjectArray;
     rs,re,k,f,n:int64;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  a:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);
  TBESEN(Instance).GarbageCollector.Add(a);
  a.GarbageCollectorLock;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    rs:=TBESEN(Instance).ToInt32(Arguments^[0]^);
@@ -433,7 +433,7 @@ begin
     k:=l;
    end;
   end;
-  if (CountArguments>1) and (Arguments^[1]^.ValueType<>bvtUNDEFINED) then begin
+  if (CountArguments>1) and (BESENValueType(Arguments^[1]^)<>bvtUNDEFINED) then begin
    re:=TBESEN(Instance).ToInt32(Arguments^[1]^);
   end else begin
    re:=l;
@@ -452,7 +452,7 @@ begin
   n:=0;
   while k<f do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
     a.DefineOwnProperty(BESENArrayIndexToStr(n),BESENDataPropertyDescriptor(v,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
    end;
    inc(k);
@@ -461,7 +461,7 @@ begin
   a.Put('length',BESENNumberValue(n),true,BESENLengthHash);
  finally
   a.GarbageCollectorUnlock;
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENObjectValue(a);
 end;
@@ -475,29 +475,29 @@ var CompareFunction:TBESENObject;
       sx,sy:TBESENString;
       ValuePointers:array[0..1] of PBESENValue;
   begin
-   if (x.ValueType=bvtNONE) and (y.ValueType=bvtNONE) then begin
+   if (TBESENUInt64(pointer(@x)^)=TBESENUInt64(BESENNoneValueRaw)) and (TBESENUInt64(pointer(@y)^)=TBESENUInt64(BESENNoneValueRaw)) then begin
     result:=0;
-   end else if x.ValueType=bvtNONE then begin
+   end else if TBESENUInt64(pointer(@x)^)=TBESENUInt64(BESENNoneValueRaw) then begin
     result:=1;
-   end else if y.ValueType=bvtNONE then begin
+   end else if TBESENUInt64(pointer(@y)^)=TBESENUInt64(BESENNoneValueRaw) then begin
     result:=-1;
-   end else if (x.ValueType=bvtUNDEFINED) and (y.ValueType=bvtUNDEFINED) then begin
+   end else if (BESENValueType(x)=bvtUNDEFINED) and (BESENValueType(y)=bvtUNDEFINED) then begin
     result:=0;
-   end else if x.ValueType=bvtUNDEFINED then begin
+   end else if BESENValueType(x)=bvtUNDEFINED then begin
     result:=1;
-   end else if y.ValueType=bvtUNDEFINED then begin
+   end else if BESENValueType(y)=bvtUNDEFINED then begin
     result:=-1;
    end else begin
     if assigned(CompareFunction) then begin
      ValuePointers[0]:=@x;
      ValuePointers[1]:=@y;
      TBESEN(Instance).ObjectCall(CompareFunction,ThisArgument,@ValuePointers,2,vn);
-     if (vn.ValueType<>bvtNUMBER) or BESENIsNaN(vn.Num) then begin
+     if (BESENValueType(vn)<>bvtNUMBER) or BESENIsNaN(BESENValueNumber(vn)) then begin
       raise EBESENTypeError.Create('Array sort error');
      end;
-     if BESENIsNegative(vn.Num) then begin
+     if BESENIsNegative(BESENValueNumber(vn)) then begin
       result:=-1;
-     end else if not BESENIsZero(0) then begin
+     end else if not BESENIsZero(BESENValueNumber(vn)) then begin
       result:=1;
      end else begin
       result:=0;
@@ -521,16 +521,16 @@ var CompareFunction:TBESENObject;
   var s:TBESENString;
   begin
    s:=BESENArrayIndexToStr(i);
-   if not TBESENObject(ov.Obj).Get(s,r) then begin
-    r.ValueType:=bvtNONE;
+   if not TBESENObject(BESENValueObject(ov)).Get(s,r) then begin
+    TBESENUInt64(pointer(@r)^):=TBESENUInt64(BESENNoneValueRaw);
    end;
   end;
   procedure PutIndex(i:int64;const a:TBESENValue);
   begin
-   if a.ValueType=bvtNONE then begin
-    TBESENObject(ov.Obj).Delete(BESENArrayIndexToStr(i),true);
+   if TBESENUInt64(pointer(@a)^)=TBESENUInt64(BESENNoneValueRaw) then begin
+    TBESENObject(BESENValueObject(ov)).Delete(BESENArrayIndexToStr(i),true);
    end else begin
-    TBESENObject(ov.Obj).Put(BESENArrayIndexToStr(i),a,true);
+    TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr(i),a,true);
    end;
   end;
   function CompareIndex(const a,b:int64):integer;
@@ -673,16 +673,16 @@ var CompareFunction:TBESENObject;
 var l:int64;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',sva,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',sva,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   l:=TBESEN(Instance).ToUINT32(sva);
   if CountArguments>0 then begin
-   if (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj) and TBESENObject(Arguments^[0]^.Obj).HasCall then begin
-    CompareFunction:=TBESENObject(Arguments^[0]^.Obj);
+   if (BESENValueType(Arguments^[0]^)=bvtOBJECT) and TBESENObject(BESENValueObject(Arguments^[0]^)).HasCall then begin
+    CompareFunction:=TBESENObject(BESENValueObject(Arguments^[0]^));
    end else begin
     raise EBESENTypeError.Create('Bad argument');
    end;
@@ -691,9 +691,9 @@ begin
   end;
   IntroSort(0,l-1,BESENIntLog2(l)*2);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
- ResultValue:=BESENObjectValue(TBESENObject(ov.Obj));
+ ResultValue:=BESENObjectValue(TBESENObject(BESENValueObject(ov)));
 end;
 
 procedure TBESENObjectArrayPrototype.NativeSplice(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
@@ -703,15 +703,15 @@ var ov,v:TBESENValue;
     s9,s11,s22,s33,s39:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  a:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);
  TBESEN(Instance).GarbageCollector.Add(a);
  a.GarbageCollectorLock;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   r3:=TBESEN(Instance).ToUINT32(v);
 
   if CountArguments<1 then begin
@@ -719,12 +719,12 @@ begin
   end else begin
    TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
   end;
-  if (-v.Num)>r3 then begin
+  if (-BESENValueNumber(v))>r3 then begin
    r5:=0;
-  end else if BESENIsNegative(v.Num) then begin
-   r5:=trunc(r3+v.Num);
-  end else if v.Num<r3 then begin
-   r5:=trunc(v.Num);
+  end else if BESENIsNegative(BESENValueNumber(v)) then begin
+   r5:=trunc(r3+BESENValueNumber(v));
+  end else if BESENValueNumber(v)<r3 then begin
+   r5:=trunc(BESENValueNumber(v));
   end else begin
    r5:=r3;
   end;
@@ -734,10 +734,10 @@ begin
   end else begin
    TBESEN(Instance).ToIntegerValue(Arguments^[1]^,v);
   end;
-  if BESENIsNegative(v.Num) then begin
+  if BESENIsNegative(BESENValueNumber(v)) then begin
    r6:=0;
   end else begin
-   r6:=trunc(v.Num);
+   r6:=trunc(BESENValueNumber(v));
   end;
   if (r3-r5)<r6 then begin
    r6:=r3-r5;
@@ -745,7 +745,7 @@ begin
   k:=0;
   while k<r6 do begin
    s9:=BESENArrayIndexToStr(r5+k);
-   if TBESENObject(ov.Obj).Get(s9,v) then begin
+   if TBESENObject(BESENValueObject(ov)).Get(s9,v) then begin
     s11:=BESENArrayIndexToStr(k);
     A.DefineOwnProperty(s11,BESENDataPropertyDescriptor(v,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
    end;
@@ -763,27 +763,27 @@ begin
     k:=r5;
     while k<(r3-r6) do begin
      s22:=BESENArrayIndexToStr(k+r6);
-     if TBESENObject(ov.Obj).Get(s22,v) then begin
-      TBESENObject(ov.Obj).Put(BESENArrayIndexToStr(k+r17),v,true);
+     if TBESENObject(BESENValueObject(ov)).Get(s22,v) then begin
+      TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr(k+r17),v,true);
      end else begin
-      TBESENObject(ov.Obj).Delete(BESENArrayIndexToStr(k+r17),true);
+      TBESENObject(BESENValueObject(ov)).Delete(BESENArrayIndexToStr(k+r17),true);
      end;
      inc(k);
     end;
     k:=r3;
     while k>((r3+r17)-r6) do begin
      s33:=BESENArrayIndexToStr(k-1);
-     TBESENObject(ov.Obj).Delete(s33,true);
+     TBESENObject(BESENValueObject(ov)).Delete(s33,true);
      dec(k);
     end;
    end else begin
     k:=r3-r6;
     while k>r5 do begin
      s39:=BESENArrayIndexToStr(k+r6-1);
-     if TBESENObject(ov.Obj).Get(s39,v) then begin
-      TBESENObject(ov.Obj).Put(BESENArrayIndexToStr(k+r17-1),v,true);
+     if TBESENObject(BESENValueObject(ov)).Get(s39,v) then begin
+      TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr(k+r17-1),v,true);
      end else begin
-      TBESENObject(ov.Obj).Delete(BESENArrayIndexToStr(k+r17-1),true);
+      TBESENObject(BESENValueObject(ov)).Delete(BESENArrayIndexToStr(k+r17-1),true);
      end;
      dec(k);
     end;
@@ -792,14 +792,14 @@ begin
 
   k:=2;
   while k<longword(CountArguments) do begin
-   TBESENObject(ov.Obj).Put(BESENArrayIndexToStr((k+r5)-2),Arguments^[k]^,true);
+   TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr((k+r5)-2),Arguments^[k]^,true);
    inc(k);
   end;
 
-  TBESENObject(ov.Obj).Put('length',BESENNumberValue((r3+r17)-r6),true,BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue((r3+r17)-r6),true,BESENLengthHash);
  finally
   a.GarbageCollectorUnlock;
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENObjectValue(a);
 end;
@@ -810,33 +810,33 @@ var r2,r3,k:TBESENUINT32;
     p:TBESENString;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   r2:=TBESEN(Instance).ToUINT32(v);
   r3:=CountArguments;
   BESENArrayCheckTooLong(r2,r3);
   k:=r2;
   while k>0 do begin
    p:=BESENArrayIndexToStr(k-1);
-   if TBESENObject(ov.Obj).Get(p,v) then begin
-    TBESENObject(ov.Obj).Put(BESENArrayIndexToStr((k+r3)-1),v,true);
+   if TBESENObject(BESENValueObject(ov)).Get(p,v) then begin
+    TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr((k+r3)-1),v,true);
    end else begin
-    TBESENObject(ov.Obj).Delete(BESENArrayIndexToStr((k+r3)-1),true);
+    TBESENObject(BESENValueObject(ov)).Delete(BESENArrayIndexToStr((k+r3)-1),true);
    end;
    dec(k);
   end;
   k:=0;
   while k<r3 do begin
-   TBESENObject(ov.Obj).Put(BESENArrayIndexToStr(k),Arguments^[k]^,true);
+   TBESENObject(BESENValueObject(ov)).Put(BESENArrayIndexToStr(k),Arguments^[k]^,true);
    inc(k);
   end;
-  TBESENObject(ov.Obj).Put('length',BESENNumberValue(r2+r3),true,BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Put('length',BESENNumberValue(r2+r3),true,BESENLengthHash);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
  ResultValue:=BESENUndefinedValue;
 end;
@@ -846,15 +846,14 @@ var ov,sv,v:TBESENValue;
     Len,n,k:int64;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
-  ResultValue.ValueType:=bvtNUMBER;
-  ResultValue.Num:=-1;
+  ResultValue:=BESENNumberValue(-1);
   if Len>0 then begin
    if CountArguments>0 then begin
     sv:=Arguments^[0]^;
@@ -876,10 +875,9 @@ begin
      k:=n;
     end;
     while k<Len do begin
-     if TBESENObject(ov.Obj).Get(BESENArrayIndexToStr(k),v) then begin
+     if TBESENObject(BESENValueObject(ov)).Get(BESENArrayIndexToStr(k),v) then begin
       if BESENEqualityExpressionStrictEquals(sv,v) then begin
-       ResultValue.ValueType:=bvtNUMBER;
-       ResultValue.Num:=k;
+       ResultValue:=BESENNumberValue(k);
        break;
       end;
      end;
@@ -888,7 +886,7 @@ begin
    end;
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -897,14 +895,13 @@ var ov,sv,v:TBESENValue;
     Len,n,k:int64;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- ResultValue.ValueType:=bvtNUMBER;
- ResultValue.Num:=-1;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ ResultValue:=BESENNumberValue(-1);
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if Len>0 then begin
    if CountArguments>0 then begin
@@ -923,10 +920,9 @@ begin
     k:=min(n,Len-1);
    end;
    while k>=0 do begin
-    if TBESENObject(ov.Obj).Get(BESENArrayIndexToStr(k),v) then begin
+    if TBESENObject(BESENValueObject(ov)).Get(BESENArrayIndexToStr(k),v) then begin
      if BESENEqualityExpressionStrictEquals(sv,v) then begin
-      ResultValue.ValueType:=bvtNUMBER;
-      ResultValue.Num:=k;
+      ResultValue:=BESENNumberValue(k);
       break;
      end;
     end;
@@ -934,7 +930,7 @@ begin
    end;
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -945,12 +941,12 @@ var ov,cv,tv,v,vr,vi:TBESENValue;
     ValuePointers:array[0..2] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -968,24 +964,22 @@ begin
   ValuePointers[0]:=@v;
   ValuePointers[1]:=@vi;
   ValuePointers[2]:=@ov;
-  ResultValue.ValueType:=bvtBOOLEAN;
-  ResultValue.Bool:=true;
+  ResultValue:=BESENBooleanValue(true);
   k:=0;
   while k<Len do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
-    vi.ValueType:=bvtNUMBER;
-    vi.Num:=k;
-    TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),tv,@ValuePointers,3,vr);
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+    vi:=BESENNumberValue(k);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),tv,@ValuePointers,3,vr);
     if not TBESEN(Instance).ToBool(vr) then begin
-     ResultValue.Bool:=false;
+     ResultValue:=BESENBooleanValue(false);
      break;
     end;
    end;
    inc(k);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -996,12 +990,12 @@ var ov,cv,tv,v,vr,vi:TBESENValue;
     ValuePointers:array[0..2] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1016,27 +1010,25 @@ begin
   end else begin
    tv:=BESENUndefinedValue;
   end;
-  ResultValue.ValueType:=bvtBOOLEAN;
-  ResultValue.Bool:=false;
+  ResultValue:=BESENBooleanValue(false);
   ValuePointers[0]:=@v;
   ValuePointers[1]:=@vi;
   ValuePointers[2]:=@ov;
   k:=0;
   while k<Len do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
-    vi.ValueType:=bvtNUMBER;
-    vi.Num:=k;
-    TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),tv,@ValuePointers,3,vr);
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+    vi:=BESENNumberValue(k);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),tv,@ValuePointers,3,vr);
     if TBESEN(Instance).ToBool(vr) then begin
-     ResultValue.Bool:=true;
+     ResultValue:=BESENBooleanValue(true);
      break;
     end;
    end;
    inc(k);
   end;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -1047,12 +1039,12 @@ var ov,cv,tv,v,vr,vi:TBESENValue;
     ValuePointers:array[0..2] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1073,16 +1065,15 @@ begin
   k:=0;
   while k<Len do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
-    vi.ValueType:=bvtNUMBER;
-    vi.Num:=k;
-    TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),tv,@ValuePointers,3,vr);
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+    vi:=BESENNumberValue(k);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),tv,@ValuePointers,3,vr);
    end;
    inc(k);
   end;
-  ResultValue.ValueType:=bvtUNDEFINED;
+  ResultValue:=BESENUndefinedValue;
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -1094,12 +1085,12 @@ var ov,cv,tv,v,vr,vi:TBESENValue;
     ValuePointers:array[0..2] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1125,10 +1116,9 @@ begin
    k:=0;
    while k<Len do begin
     Pk:=BESENArrayIndexToStr(k);
-    if TBESENObject(ov.Obj).Get(Pk,v) then begin
-     vi.ValueType:=bvtNUMBER;
-     vi.Num:=k;
-     TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),tv,@ValuePointers,3,vr);
+    if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+     vi:=BESENNumberValue(k);
+     TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),tv,@ValuePointers,3,vr);
      a.DefineOwnProperty(Pk,BESENDataPropertyDescriptor(vr,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
     end;
     inc(k);
@@ -1138,7 +1128,7 @@ begin
   end;
   ResultValue:=BESENObjectValue(a);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -1150,12 +1140,12 @@ var ov,cv,tv,kv,vr,vi:TBESENValue;
     ValuePointers:array[0..2] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',kv,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',kv,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(kv);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1181,10 +1171,9 @@ begin
    n:=0;
    while k<Len do begin
     Pk:=BESENArrayIndexToStr(k);
-    if TBESENObject(ov.Obj).Get(Pk,kv) then begin
-     vi.ValueType:=bvtNUMBER;
-     vi.Num:=k;
-     TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),tv,@ValuePointers,3,vr);
+    if TBESENObject(BESENValueObject(ov)).Get(Pk,kv) then begin
+     vi:=BESENNumberValue(k);
+     TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),tv,@ValuePointers,3,vr);
      if TBESEN(Instance).ToBool(vr) then begin
       a.DefineOwnProperty(BESENArrayIndexToStr(n),BESENDataPropertyDescriptor(kv,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]),false);
       inc(n);
@@ -1197,7 +1186,7 @@ begin
   end;
   ResultValue:=BESENObjectValue(a);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -1209,12 +1198,12 @@ var ov,cv,av,v,vi,nav:TBESENValue;
     ValuePointers:array[0..3] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1233,9 +1222,9 @@ begin
    kPresent:=false;
    while (k<Len) and not kPresent do begin
     Pk:=BESENArrayIndexToStr(k);
-    kPresent:=TBESENObject(ov.Obj).HasProperty(Pk);
+    kPresent:=TBESENObject(BESENValueObject(ov)).HasProperty(Pk);
     if kPresent then begin
-     TBESENObject(ov.Obj).Get(Pk,av);
+     TBESENObject(BESENValueObject(ov)).Get(Pk,av);
     end;
     inc(k);
    end;
@@ -1250,17 +1239,16 @@ begin
   ValuePointers[3]:=@ov;
   while k<Len do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
-    vi.ValueType:=bvtNUMBER;
-    vi.Num:=k;
-    TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),BESENUndefinedValue,@ValuePointers,4,nav);
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+    vi:=BESENNumberValue(k);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),BESENUndefinedValue,@ValuePointers,4,nav);
     BesenCopyValue(av,nav);
    end;
    inc(k);
   end;
   BESENCopyValue(ResultValue,av);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 
@@ -1272,12 +1260,12 @@ var ov,cv,av,v,vi,nav:TBESENValue;
     ValuePointers:array[0..3] of PBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
- if not ((ov.ValueType=bvtOBJECT) and assigned(TBESENObject(ov.Obj))) then begin
+ if not ((BESENValueType(ov)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ov)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObject(ov.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
  try
-  TBESENObject(ov.Obj).Get('length',v,TBESENObject(ov.Obj),BESENLengthHash);
+  TBESENObject(BESENValueObject(ov)).Get('length',v,TBESENObject(BESENValueObject(ov)),BESENLengthHash);
   Len:=TBESEN(Instance).ToUINT32(v);
   if CountArguments>0 then begin
    cv:=Arguments^[0]^;
@@ -1296,9 +1284,9 @@ begin
    kPresent:=false;
    while (k>=0) and not kPresent do begin
     Pk:=BESENArrayIndexToStr(k);
-    kPresent:=TBESENObject(ov.Obj).HasProperty(Pk);
+    kPresent:=TBESENObject(BESENValueObject(ov)).HasProperty(Pk);
     if kPresent then begin
-     TBESENObject(ov.Obj).Get(Pk,av);
+     TBESENObject(BESENValueObject(ov)).Get(Pk,av);
     end;
     dec(k);
    end;
@@ -1313,17 +1301,16 @@ begin
   ValuePointers[3]:=@ov;
   while k>=0 do begin
    Pk:=BESENArrayIndexToStr(k);
-   if TBESENObject(ov.Obj).Get(Pk,v) then begin
-    vi.ValueType:=bvtNUMBER;
-    vi.Num:=k;
-    TBESEN(Instance).ObjectCall(TBESENObject(cv.Obj),BESENUndefinedValue,@ValuePointers,4,nav); // ES5 errata fix
+   if TBESENObject(BESENValueObject(ov)).Get(Pk,v) then begin
+    vi:=BESENNumberValue(k);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(cv)),BESENUndefinedValue,@ValuePointers,4,nav); // ES5 errata fix
     BesenCopyValue(av,nav);
    end;
    dec(k);
   end;
   BESENCopyValue(ResultValue,av);
  finally
-  TBESENObject(ov.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
  end;
 end;
 

@@ -59,23 +59,23 @@ begin
  v:=BESENEmptyValue;
 
  v:=BESENNumberValue(0);
- move(BESENDoubleMax,v.Num,sizeof(TBESENNumber));
+ TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleMax)^);
  OverwriteData('MAX_VALUE',v,[]);
 
  v:=BESENNumberValue(0);
- move(BESENDoubleMin,v.Num,sizeof(TBESENNumber));
+ TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleMin)^);
  OverwriteData('MIN_VALUE',v,[]);
 
  v:=BESENNumberValue(0);
- move(BESENDoubleNaN,v.Num,sizeof(TBESENNumber));
+ TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleNaN)^);
  OverwriteData('NaN',v,[]);
 
  v:=BESENNumberValue(0);
- move(BESENDoubleInfNeg,v.Num,sizeof(TBESENNumber));
+ TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleInfNeg)^);
  OverwriteData('NEGATIVE_INFINITY',v,[]);
 
  v:=BESENNumberValue(0);
- move(BESENDoubleInfPos,v.Num,sizeof(TBESENNumber));
+ TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleInfPos)^);
  OverwriteData('POSITIVE_INFINITY',v,[]);
 end;
 
@@ -99,18 +99,16 @@ begin
  finally
   r1.GarbageCollectorUnlock;
  end;
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=r1;
+ AResult:=BESENObjectValue(r1);
 end;
 
 procedure TBESENObjectNumberConstructor.Call(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);
 var v:TBESENValue;
 begin
  if CountArguments<1 then begin
-  AResult.ValueType:=bvtNUMBER;
-  AResult.Num:=0;
- end else if ((TBESEN(Instance).Compatibility and COMPAT_JS)<>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj) and (Arguments^[0]^.Obj is TBESENObjectArray) then begin
-  TBESENObjectArray(Arguments^[0]^.Obj).Get('length',v,TBESENObject(Arguments^[0]^.Obj),BESENLengthHash);
+  AResult:=BESENNumberValue(0.0);
+ end else if ((TBESEN(Instance).Compatibility and COMPAT_JS)<>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and (TBESENObject(BESENValueObject(Arguments^[0]^)) is TBESENObjectArray) then begin
+  TBESENObjectArray(BESENValueObject(Arguments^[0]^)).Get('length',v,TBESENObject(BESENValueObject(Arguments^[0]^)),BESENLengthHash);
   TBESEN(Instance).ToNumberValue(v,AResult);
  end else begin
   TBESEN(Instance).ToNumberValue(Arguments^[0]^,AResult);

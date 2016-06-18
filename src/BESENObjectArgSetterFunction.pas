@@ -74,7 +74,7 @@ begin
  end else begin
   Env.SetMutableBinding(ArgName,Arguments^[0]^,true,BESENHashKey(ArgName));
  end;
- AResult.ValueType:=bvtUNDEFINED;
+ AResult:=BESENUndefinedValue;
 end;
 
 function TBESENObjectArgSetterFunction.HasCall:TBESENBoolean;

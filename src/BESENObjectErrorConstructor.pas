@@ -68,8 +68,8 @@ var r1:TBESENObjectError;
 begin
  // ES5 errata fix
  Get('prototype',r3);
- if r3.ValueType=bvtOBJECT then begin
-  r2:=TBESENObject(r3.Obj);
+ if BESENValueType(r3)=bvtOBJECT then begin
+  r2:=TBESENObject(BESENValueObject(r3));
  end else begin
   r2:=nil;
  end;
@@ -77,7 +77,7 @@ begin
  TBESEN(Instance).GarbageCollector.Add(r1);
  r1.GarbageCollectorLock;
  try
-  if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+  if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
    r1.OverwriteData('message',BESENStringValue(TBESEN(Instance).ToStr(Arguments^[0]^)),[bopaWRITABLE,bopaCONFIGURABLE]);
   end else begin
    r1.OverwriteData('message',BESENStringValue(''),[bopaWRITABLE,bopaCONFIGURABLE]);
@@ -85,8 +85,7 @@ begin
  finally
   r1.GarbageCollectorUnlock;
  end;
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=r1;
+ AResult:=BESENObjectValue(r1);
 end;
 
 procedure TBESENObjectErrorConstructor.Call(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);

@@ -77,10 +77,10 @@ begin
  if CountArguments>0 then begin
   r1.GarbageCollectorLock;
   try
-   if (CountArguments=1) and (Arguments^[0]^.ValueType=bvtNUMBER) then begin
+   if (CountArguments=1) and (BESENValueType(Arguments^[0]^)=bvtNUMBER) then begin
     r3:=Arguments^[0]^;
     l:=TBESEN(Instance).ToUInt32(r3);
-    if (l<>r3.Num) or not BESENIsFinite(r3.Num) then begin
+    if (l<>BESENValueNumber(r3)) or not BESENIsFinite(BESENValueNumber(r3)) then begin
      raise EBESENRangeError.Create('Bad array length');
     end;
     r1.Put('length',r3,true,BESENLengthHash);
@@ -95,8 +95,7 @@ begin
    r1.GarbageCollectorUnlock;
   end;
  end;
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=r1;
+ AResult:=BESENObjectValue(r1);
 end;
 
 procedure TBESENObjectArrayConstructor.Call(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);
@@ -116,8 +115,7 @@ end;
 
 procedure TBESENObjectArrayConstructor.NativeIsArray(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=(CountArguments>0) and (((Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj)) and (TBESENObject(Arguments^[0]^.Obj).ObjectClassName='Array'));
+ ResultValue:=BESENBooleanValue((CountArguments>0) and ((BESENValueType(Arguments^[0]^)=bvtOBJECT) and (TBESENObject(BESENValueObject(Arguments^[0]^)).ObjectClassName='Array')));
 end;
 
 end.

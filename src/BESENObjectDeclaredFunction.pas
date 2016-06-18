@@ -108,8 +108,8 @@ var r1:TBESENObject;
     r3:TBESENValue;
 begin
  Get('prototype',r3);
- if (r3.ValueType=bvtOBJECT) and assigned(TBESENObject(r3.Obj)) then begin
-  r1:=TBESENObject.Create(Instance,TBESENObject(r3.Obj),false);
+ if (BESENValueType(r3)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(r3))) then begin
+  r1:=TBESENObject.Create(Instance,TBESENObject(BESENValueObject(r3)),false);
  end else begin
   r1:=TBESENObject.Create(Instance,TBESEN(Instance).ObjectPrototype,false);
  end;
@@ -121,9 +121,8 @@ begin
  finally
   r1.GarbageCollectorUnlock;
  end;
- if AResult.ValueType<>bvtOBJECT then begin
-  AResult.ValueType:=bvtOBJECT;
-  AResult.Obj:=r1;
+ if BESENValueType(AResult)<>bvtOBJECT then begin
+  AResult:=BESENObjectValue(r1);
  end;
 end;
 
@@ -139,10 +138,9 @@ var NewContext:TBESENContext;
  begin
   if Node.Body.IsStrict then begin
    BESENCopyValue(NewContext.ThisBinding,ThisArgument);
-  end else if ThisArgument.ValueType in [bvtUNDEFINED,bvtNULL] then begin
-   NewContext.ThisBinding.ValueType:=bvtOBJECT;
-   NewContext.ThisBinding.Obj:=TBESEN(Instance).ObjectGlobal;
-  end else if ThisArgument.ValueType<>bvtOBJECT then begin
+  end else if BESENValueType(ThisArgument) in [bvtUNDEFINED,bvtNULL] then begin
+   NewContext.ThisBinding:=BESENObjectValue(TBESEN(Instance).ObjectGlobal);
+  end else if BESENValueType(ThisArgument)<>bvtOBJECT then begin
    TBESEN(Instance).ToObjectValue(ThisArgument,NewContext.ThisBinding);
   end else begin
    BESENCopyValue(NewContext.ThisBinding,ThisArgument);
@@ -177,7 +175,7 @@ begin
    end;
    try
     if Node.Body.IsEmpty then begin
-     AResult.ValueType:=bvtUNDEFINED;
+     AResult:=BESENUndefinedValue;
     end else begin
      Node.ExecuteCode(NewContext,AResult);
     end;
@@ -197,7 +195,7 @@ begin
    GarbageCollectorUnlock;
   end;
  end else begin
-  AResult.ValueType:=bvtUNDEFINED;
+  AResult:=BESENUndefinedValue;
  end;
 end;
 

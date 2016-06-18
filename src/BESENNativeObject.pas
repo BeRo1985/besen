@@ -276,56 +276,46 @@ begin
 
  case Item^.PropType^.Kind of
   tkLString{$ifdef fpc},tkAString,tkSString{$endif}:begin
-   V.ValueType:=bvtSTRING;
 {$ifdef Delphi2009AndUp}
-   V.Str:=GetStrProp(self,Item);
+   V:=BESENStringValue(GetStrProp(self,Item));
 {$else}
-   V.Str:=BESENConvertToUTF8(GetStrProp(self,Item));
+   V:=BESENStringValue(BESENConvertToUTF8(GetStrProp(self,Item)));
 {$endif}
   end;
   tkWString{$ifdef fpc},tkUString{$endif}{$ifdef BESENEmbarcaderoNextGen},tkUString{$endif}:begin
-   V.ValueType:=bvtSTRING;
-   V.Str:={$ifdef BESENEmbarcaderoNextGen}GetStrProp{$else}GetWideStrProp{$endif}(self,Item);
+   V:=BESENStringValue({$ifdef BESENEmbarcaderoNextGen}GetStrProp{$else}GetWideStrProp{$endif}(self,Item));
   end;
   tkEnumeration:begin
-   V.ValueType:=bvtSTRING;
-   V.Str:=GetEnumProp(self,Item);
+   V:=BESENStringValue(GetEnumProp(self,Item));
   end;
   tkSet:begin
-   V.ValueType:=bvtSTRING;
-   V.Str:=GetSetProp(self,Item,false);
+   V:=BESENStringValue(GetSetProp(self,Item,false));
   end;
   tkInteger:begin
-   V.ValueType:=bvtNUMBER;
-   V.Num:=GetOrdProp(self,Item);
+   V:=BESENNumberValue(GetOrdProp(self,Item));
   end;
   tkChar:begin
-   V.ValueType:=bvtSTRING;
-   V.Str:=WideChar({$ifndef BESENEmbarcaderoNextGen}TBESENCHAR({$endif}byte(GetOrdProp(self,Item)){$ifndef BESENEmbarcaderoNextGen}){$endif});
+   V:=BESENStringValue(WideChar({$ifndef BESENEmbarcaderoNextGen}TBESENCHAR({$endif}byte(GetOrdProp(self,Item)){$ifndef BESENEmbarcaderoNextGen}){$endif}));
   end;
-  tkWChar:begin
-   V.ValueType:=bvtSTRING;
-   V.Str:=widechar(word(GetOrdProp(self,Item)));
+  tkWChar{$ifdef fpc},tkUChar{$endif}:begin
+   V:=BESENStringValue(widechar(word(GetOrdProp(self,Item))));
   end;
   tkInt64{$ifdef fpc},tkQWORD{$endif}:begin
-   V.ValueType:=bvtNUMBER;
-   V.Num:=GetInt64Prop(self,Item);
+   V:=BESENNumberValue(GetInt64Prop(self,Item));
   end;
   tkFloat:begin
-   V.ValueType:=bvtNUMBER;
-   V.Num:=GetFloatProp(self,Item);
+   V:=BESENNumberValue(GetFloatProp(self,Item));
   end;
   tkClass:begin
    O:=GetObjectProp(self,Item);
    if assigned(O) then begin
     if O is TBESENObject then begin
-     V.ValueType:=bvtOBJECT;
-     TBESENObject(v.Obj):=TBESENObject(o);
+     v:=BESENObjectValue(TBESENObject(o));
     end else begin
-     V.ValueType:=bvtUNDEFINED;
+     V:=BESENUndefinedValue;
     end;
    end else begin
-    V.ValueType:=bvtNULL;
+    V:=BESENNullValue;
    end;
   end;
   tkVariant:begin
@@ -390,15 +380,15 @@ begin
    SetOrdProp(self,Item,TBESEN(Instance).ToInt32(V));
   end;
   tkChar:begin
-   if (V.ValueType=bvtSTRING) and (length(V.Str)>0) then begin
-    SetOrdProp(self,Item,byte(word(widechar(V.Str[1]))));
+   if (BESENValueType(v)=bvtSTRING) and (length(BESENValueString(v))>0) then begin
+    SetOrdProp(self,Item,byte(word(widechar(BESENValueString(V)[1]))));
    end else begin
     SetOrdProp(self,Item,TBESEN(Instance).ToInt32(V));
    end;
   end;
-  tkWChar:begin
-   if (V.ValueType=bvtSTRING) and (length(V.Str)>0) then begin
-    SetOrdProp(self,Item,word(widechar(V.Str[1])));
+  tkWChar{$ifdef fpc},tkUChar{$endif}:begin
+   if (BESENValueType(v)=bvtSTRING) and (length(BESENValueString(v))>0) then begin
+    SetOrdProp(self,Item,word(widechar(BESENValueString(V)[1])));
    end else begin
     SetOrdProp(self,Item,TBESEN(Instance).ToInt32(V));
    end;
@@ -534,17 +524,18 @@ begin
 end;
                                 
 procedure TBESENNativeObject.Construct(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);
+var o:TBESENObject;
 begin
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=TBESENNativeObjectClass(ClassType).Create(Instance,self,false);
- TBESEN(Instance).GarbageCollector.Add(TBESENObject(AResult.Obj));
- TBESENObject(AResult.Obj).GarbageCollectorLock;
+ o:=TBESENNativeObjectClass(ClassType).Create(Instance,self,false);
+ AResult:=BESENObjectValue(o);
+ TBESEN(Instance).GarbageCollector.Add(o);
+ TBESENObject(o).GarbageCollectorLock;
  try
-  TBESENNativeObject(AResult.Obj).ObjectClassName:=AResult.Obj.ClassName;
-  TBESENNativeObject(AResult.Obj).InitializeObject;
-  TBESENNativeObject(AResult.Obj).ConstructObject(ThisArgument,Arguments,CountArguments);
+  TBESENNativeObject(o).ObjectClassName:=o.ClassName;
+  TBESENNativeObject(o).InitializeObject;
+  TBESENNativeObject(o).ConstructObject(ThisArgument,Arguments,CountArguments);
  finally
-  TBESENObject(AResult.Obj).GarbageCollectorUnlock;
+  TBESENObject(o).GarbageCollectorUnlock;
  end;
 end;
 

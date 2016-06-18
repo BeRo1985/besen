@@ -63,14 +63,13 @@ begin
 
  OverwriteData('source',BESENStringValue(''),[]);
 
- bv.ValueType:=bvtBOOLEAN;
- bv.Bool:=brefGLOBAL in Engine.Flags;
+ bv:=BESENBooleanValue(brefGLOBAL in Engine.Flags);
  OverwriteData('global',bv,[]);
 
- bv.Bool:=brefIGNORECASE in Engine.Flags;
+ bv:=BESENBooleanValue(brefIGNORECASE in Engine.Flags);
  OverwriteData('ignoreCase',bv,[]);
 
- bv.Bool:=brefMULTILINE in Engine.Flags;
+ bv:=BESENBooleanValue(brefMULTILINE in Engine.Flags);
  OverwriteData('multiline',bv,[]);
 
  OverwriteData('lastIndex',BESENNumberValue(0),[bopaWRITABLE]);
@@ -141,7 +140,7 @@ begin
    v:=BESENStringValue('');
   end;
   if (i>0) and (i<length(Captures)) then begin
-   lastParen:=v.Str;
+   lastParen:=BESENValueString(v);
   end;
   OverwriteData(pn,v,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]);
   if i=0 then begin
@@ -149,8 +148,7 @@ begin
   end;
  end;
 
- v.ValueType:=bvtBOOLEAN;
- v.Bool:=brefMULTILINE in Engine.Flags;
+ v:=BESENBooleanValue(brefMULTILINE in Engine.Flags);
  OverwriteData('$*',v,[bopaWRITABLE,bopaCONFIGURABLE]);
  OverwriteData('multiline',v,[]);
 
@@ -178,12 +176,10 @@ begin
  OverwriteData('$''',v,[bopaWRITABLE,bopaCONFIGURABLE]);
  OverwriteData('rightContext',v,[bopaWRITABLE,bopaCONFIGURABLE]);
 
- v.ValueType:=bvtBOOLEAN;
- v.Bool:=brefGLOBAL in Engine.Flags;
+ v:=BESENBooleanValue(brefGLOBAL in Engine.Flags);
  OverwriteData('global',v,[]);
 
- v.ValueType:=bvtBOOLEAN;
- v.Bool:=brefIGNORECASE in Engine.Flags;
+ v:=BESENBooleanValue(brefIGNORECASE in Engine.Flags);
  OverwriteData('ignoreCase',v,[]);
 
  if (length(Captures)>0) and not (brefGLOBAL in Engine.Flags) then begin

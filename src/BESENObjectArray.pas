@@ -271,7 +271,7 @@ begin
    end else if ([boppGETTER,boppSETTER]*Prop.Descriptor.Presents)<>[] then begin
     GetGetter(Base,AResult,Prop.Descriptor);
    end else begin
-    AResult.ValueType:=bvtUNDEFINED;
+    AResult:=BESENUndefinedValue;
    end;
    result:=true;
    exit;
@@ -353,9 +353,9 @@ var v,tv:TBESENValue;
     ValuePointers:array[0..0] of PBESENValue;
 begin
  Get('push',v);
- if (v.ValueType=bvtOBJECT) and assigned(TBESENObject(v.Obj)) and TBESENObject(v.Obj).HasCall then begin
+ if (BESENValueType(v)=bvtOBJECT) and TBESENObject(BESENValueObject(v)).HasCall then begin
   ValuePointers[0]:=@AValue;
-  TBESEN(Instance).ObjectCall(TBESENObject(v.Obj),BESENObjectValue(self),@ValuePointers,1,tv);
+  TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(v)),BESENObjectValue(self),@ValuePointers,1,tv);
  end;
 end;
 

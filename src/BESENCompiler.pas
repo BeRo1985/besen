@@ -5819,8 +5819,12 @@ function TBESENCompiler.Compile(InputSource:TBESENUTF8STRING;const Parameters:TB
        if not IsValueObject(r1) then begin
         Code.GenOp(bopCHECKOBJECTCOERCIBLE,r2);
        end;
-       Hash:=BESENHashKey(BESENValueString(v));
-       Code.GenOp(bopREF,DestRegNr,r2,r3,TBESEN(Instance).KeyIDManager.Get(v.Str,Hash),Hash,Code.GenPolymorphicInlineCacheInstruction,-1,-1,-1,-1);
+       if BESENValueType(v)=bvtSTRING then begin
+        Hash:=BESENHashKey(BESENValueString(v));
+       end else begin
+        raise EBESENSyntaxError.Create('String literal expected');
+       end;
+       Code.GenOp(bopREF,DestRegNr,r2,r3,TBESEN(Instance).KeyIDManager.Get(BESENValueString(v),Hash),Hash,Code.GenPolymorphicInlineCacheInstruction,-1,-1,-1,-1);
        CodeGeneratorContext.DeallocateRegister(r1);
        CodeGeneratorContext.DeallocateRegister(r2);
        CodeGeneratorContext.DeallocateRegister(r3);

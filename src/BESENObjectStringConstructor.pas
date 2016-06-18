@@ -82,8 +82,7 @@ begin
  finally
   r1.GarbageCollectorUnlock;
  end;
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=r1;
+ AResult:=BESENObjectValue(r1);
 end;
 
 procedure TBESENObjectStringConstructor.Call(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);

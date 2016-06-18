@@ -231,22 +231,21 @@ var VisitedNodes:TBESENInt64SelfBalancedTree;
         SetLength(Code.Literals,Code.CountLiterals);
         for Counter:=0 to Code.CountLiterals-1 do begin
          v:=@Code.Literals[Counter];
-         v^.ValueType:=ReadByte;
-         case v^.ValueType of
-          bvtNONE:begin
-          end;
+         case TBESENValueType(TBESENInt32(ReadByte)) of
           bvtUNDEFINED:begin
+           v^:=BESENUndefinedValue;
           end;
           bvtNULL:begin
+           v^:=BESENNullValue;
           end;
           bvtBOOLEAN:begin
-           v^.Bool:=ReadBool;
+           v^:=BESENBooleanValue(ReadBool);
           end;
           bvtNUMBER:begin
-           v^.Num:=ReadDouble;
+           v^:=BESENNumberValue(ReadDouble);
           end;
           bvtSTRING:begin
-           v^.Str:=ReadWideString;
+           v^:=BESENStringValue(ReadWideString);
           end;
           else begin
            BESENThrowStream('Couldn''t read value');
@@ -954,22 +953,20 @@ var VisitedNodes:TBESENPointerSelfBalancedTree;
       WriteInt32(Code.CountLiterals);
       for Counter:=0 to Code.CountLiterals-1 do begin
        v:=@Code.Literals[Counter];
-       WriteByte(v^.ValueType);
-       case v^.ValueType of
-        bvtNONE:begin
-        end;
+       WriteByte(TBESENInt32(TBESENValueType(BESENValueType(v^))));
+       case BESENValueType(v^) of
         bvtUNDEFINED:begin
         end;
         bvtNULL:begin
         end;
         bvtBOOLEAN:begin
-         WriteBool(v^.Bool);
+         WriteBool(BESENValueBoolean(v^));
         end;
         bvtNUMBER:begin
-         WriteDouble(v^.Num);
+         WriteDouble(BESENValueNumber(v^));
         end;
         bvtSTRING:begin
-         WriteWideString(v^.Str);
+         WriteWideString(BESENValueString(v^));
         end;
         else begin
          BESENThrowStream('Couldn''t write value');

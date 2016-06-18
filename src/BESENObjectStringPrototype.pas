@@ -145,17 +145,17 @@ begin
  v:=BESENEmptyValue;
  if CountArguments<0 then begin
   TBESEN(Instance).ObjectConstruct(TBESEN(Instance).ObjectRegExpConstructor,BESENObjectValue(TBESEN(Instance).ObjectRegExpConstructor),nil,0,v);
-  if v.ValueType=bvtOBJECT then begin
-   result:=TBESENObject(v.Obj);
+  if BESENValueType(v)=bvtOBJECT then begin
+   result:=TBESENObject(BESENValueObject(v));
   end else begin
    result:=nil;
   end;
- end else if (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj) and (Arguments^[0]^.Obj is TBESENObjectRegExp) then begin
-  result:=TBESENObject(Arguments^[0]^.Obj);
+ end else if (BESENValueType(Arguments^[0]^)=bvtOBJECT) and (TBESENObject(BESENValueObject(Arguments^[0]^)) is TBESENObjectRegExp) then begin
+  result:=TBESENObject(BESENValueObject(Arguments^[0]^));
  end else begin
   TBESEN(Instance).ObjectConstruct(TBESEN(Instance).ObjectRegExpConstructor,BESENObjectValue(TBESEN(Instance).ObjectRegExpConstructor),Arguments,1,v);
-  if v.ValueType=bvtOBJECT then begin
-   result:=TBESENObject(v.Obj);
+  if BESENValueType(v)=bvtOBJECT then begin
+   result:=TBESENObject(BESENValueObject(v));
   end else begin
    result:=nil;
   end;
@@ -167,10 +167,10 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeToString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if ThisArgument.ValueType=bvtSTRING then begin
+ if BESENValueType(ThisArgument)=bvtSTRING then begin
   BESENCopyValue(ResultValue,ThisArgument);
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectString) then begin
-  ResultValue:=BESENStringValue(TBESENObjectString(TBESENObject(ThisArgument.Obj)).Value);
+ end else if (BESENValueType(ThisArgument)=bvtOBJECT) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectString) then begin
+  ResultValue:=BESENStringValue(TBESENObjectString(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a string object');
  end;
@@ -178,10 +178,10 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeValueOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if ThisArgument.ValueType=bvtSTRING then begin
+ if BESENValueType(ThisArgument)=bvtSTRING then begin
   BESENCopyValue(ResultValue,ThisArgument);
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectString) then begin
-  ResultValue:=BESENStringValue(TBESENObjectString(TBESENObject(ThisArgument.Obj)).Value);
+ end else if (BESENValueType(ThisArgument)=bvtOBJECT) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectString) then begin
+  ResultValue:=BESENStringValue(TBESENObjectString(TBESENObject(BESENValueObject(ThisArgument)) ).Value);
  end else begin
   raise EBESENTypeError.Create('Not a string object');
  end;
@@ -195,11 +195,11 @@ begin
  BESENCheckObjectCoercible(ThisArgument);
  s:=TBESEN(Instance).ToStr(ThisArgument);
  v:=BESENEmptyValue;
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   i:=-1;
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
-  if BESENIsFinite(v.Num) then begin
-   i:=trunc(v.Num);
+  if BESENIsFinite(BESENValueNumber(v)) then begin
+   i:=trunc(BESENValueNumber(v));
   end;
  end else begin
   i:=0;
@@ -218,11 +218,11 @@ var v:TBESENValue;
 begin
  BESENCheckObjectCoercible(ThisArgument);
  s:=TBESEN(Instance).ToStr(ThisArgument);
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   i:=-1;
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
-  if BESENIsFinite(v.Num) then begin
-   i:=trunc(v.Num);
+  if BESENIsFinite(BESENValueNumber(v)) then begin
+   i:=trunc(BESENValueNumber(v));
   end;
  end else begin
   i:=0;
@@ -230,8 +230,7 @@ begin
  if (i>=0) and (i<length(s)) then begin
   ResultValue:=BESENNumberValue(word(widechar(s[i+1])));
  end else begin
-  ResultValue:=BESENNumberValue(0);
-  move(BESENDoubleNaN,ResultValue.Num,sizeof(TBESENNumber));
+  TBESENUInt64(pointer(@ResultValue)^):=TBESENUInt64(pointer(@BESENDoubleNaN)^);
  end;
 end;
 
@@ -260,9 +259,9 @@ begin
   ss:=TBESEN(Instance).ToStr(Arguments^[0]^);
  end;
  p:=0;
- if (CountArguments>1) and (Arguments^[1]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>1) and (BESENValueType(Arguments^[1]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[1]^,v);
-  p:=trunc(v.Num);
+  p:=trunc(BESENValueNumber(v));
  end;
  if p<0 then begin
   p:=0;
@@ -304,19 +303,17 @@ begin
   ss:=TBESEN(Instance).ToStr(Arguments^[0]^);
  end;
  vi:=BESENEmptyValue;
- if (CountArguments>1) and (Arguments^[1]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>1) and (BESENValueType(Arguments^[1]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[1]^,v);
  end else begin
-  v:=BESENNumberValue(0);
-  move(BESENDoubleNaN,v.Num,sizeof(TBESENNumber));
+  TBESENUInt64(pointer(@v)^):=TBESENUInt64(pointer(@BESENDoubleNaN)^);
  end;
- if BESENIsNaN(v.Num) then begin
-  vi:=BESENNumberValue(0);
-  move(BESENDoubleInfPos,vi.Num,sizeof(TBESENNumber));
+ if BESENIsNaN(BESENValueNumber(v)) then begin
+  TBESENUInt64(pointer(@vi)^):=TBESENUInt64(pointer(@BESENDoubleInfPos)^);
  end else begin
   TBESEN(Instance).ToIntegerValue(v,vi);
  end;
- l:=trunc(min(max(vi.Num,0),length(s)));
+ l:=trunc(min(max(BESENValueNumber(vi),0),length(s)));
  ls:=length(ss);
  if l<ls then begin
   ResultValue:=BESENNumberValue(-1);
@@ -382,15 +379,15 @@ begin
  RegExp:=TBESENObjectRegExp(RegExpArg(Arguments,CountArguments));
  RegExp.Get('exec',v);
 {$ifdef UseAssert}
- Assert((v.ValueType=bvtOBJECT) and assigned(TBESENObject(v.Obj)) and TBESENObject(v.Obj).HasCall);
+ Assert((BESENValueType(v)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(v))) and TBESENObject(BESENValueObject(v)).HasCall);
 {$endif}
- Exec:=TBESENObject(v.Obj);
+ Exec:=TBESENObject(BESENValueObject(v));
 
  RegExp.Get('global',v);
 {$ifdef UseAssert}
- Assert(v.ValueType=bvtBOOLEAN);
+ Assert(BESENValueType(v)=bvtBOOLEAN);
 {$endif}
- Global:=v.Bool;
+ Global:=BESENValueBoolean(v);
  if Global then begin
   v:=BESENEmptyValue;
   vr:=BESENEmptyValue;
@@ -405,31 +402,30 @@ begin
   try
    n:=0;
    while true do begin
-    vs.ValueType:=bvtSTRING;
-    vs.Str:=s;
+    vs:=BESENStringValue(s);
     ValuePointers[0]:=@vs;
     TBESEN(Instance).ObjectCall(Exec,BESENObjectValue(RegExp),@ValuePointers,1,vr);
-    if vr.ValueType=bvtNULL then begin
+    if BESENValueType(vr)=bvtNULL then begin
      break;
     end;
 
  {$ifdef UseAssert}
-    Assert((vr.ValueType=bvtOBJECT) and assigned(vr.Obj) and (vr.Obj is TBESENObjectArray));
+    Assert((BESENValueType(vr)=bvtOBJECT) and (TBESENObject(BESENValueObject(vr)) is TBESENObjectArray));
  {$endif}
-    TBESENObject(vr.Obj).Get('0',v);
+    TBESENObject(BESENValueObject(vr)).Get('0',v);
  {$ifdef UseAssert}
-    Assert(v.ValueType=bvtSTRING);
+    Assert(BESENValueType(v)=bvtSTRING);
  {$endif}
 
     a.OverwriteData(inttostr(n),v,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE]);
     inc(Matches);
 
-    if length(v.Str)=0 then begin
+    if length(BESENValueString(v))=0 then begin
      RegExp.Get('lastIndex',v);
  {$ifdef UseAssert}
-     Assert(v.ValueType=bvtNUMBER);
+     Assert(BESENValueType(v)=bvtNUMBER);
  {$endif}
-     v.Num:=v.Num+1;
+     v:=BESENNumberValue(BESENValueNumber(v)+1);
      RegExp.OverwriteData('lastIndex',v,[bopaWRITABLE]);
     end;
     inc(n);
@@ -443,8 +439,7 @@ begin
    ResultValue:=BESENObjectValue(a);
   end;
  end else begin
-  vs.ValueType:=bvtSTRING;
-  vs.Str:=s;
+  vs:=BESENStringValue(s);
   ValuePointers[0]:=@vs;
   TBESEN(Instance).ObjectCall(Exec,BESENObjectValue(RegExp),@ValuePointers,1,ResultValue);
  end;
@@ -466,7 +461,7 @@ procedure TBESENObjectStringPrototype.NativeReplace(const ThisArgument:TBESENVal
 
   a.Get('0',v);
 {$ifdef UseAssert}
-  Assert(v.ValueType=bvtSTRING);
+  Assert(BESENValueType(v)=bvtSTRING);
 {$endif}
   ms:=TBESEN(Instance).ToStr(v);
 
@@ -476,7 +471,7 @@ procedure TBESENObjectStringPrototype.NativeReplace(const ThisArgument:TBESENVal
   end;
   PrevIndexP:=Index+longword(length(ms));
 
-  if ReplaceValue.ValueType=bvtOBJECT then begin
+  if BESENValueType(ReplaceValue)=bvtOBJECT then begin
    Values:=nil;
    pValues:=nil;
    try
@@ -493,7 +488,7 @@ procedure TBESENObjectStringPrototype.NativeReplace(const ThisArgument:TBESENVal
     for n:=0 to length(Values)-1 do begin
      pValues[n]:=@Values[n];
     end;
-    TBESEN(Instance).ObjectCall(TBESENObject(ReplaceValue.Obj),BESENObjectValueEx(TBESENObject(ReplaceValue.Obj)),@pValues[0],length(pValues),vr);
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(ReplaceValue)),BESENObjectValueEx(TBESENObject(BESENValueObject(ReplaceValue))),@pValues[0],length(pValues),vr);
     OutStr:=OutStr+TBESEN(Instance).ToStr(vr);
    finally
     SetLength(Values,0);
@@ -549,11 +544,11 @@ procedure TBESENObjectStringPrototype.NativeReplace(const ThisArgument:TBESENVal
      continue;
     end;
     a.Get(inttostr(n),v);
-    if v.ValueType<>bvtUNDEFINED then begin
+    if BESENValueType(v)<>bvtUNDEFINED then begin
 {$ifdef UseAssert}
-     Assert(v.ValueType=bvtSTRING);
+     Assert(BESENValueType(v)=bvtSTRING);
 {$endif}
-     OutStr:=OutStr+v.Str;
+     OutStr:=OutStr+BESENValueString(v);
     end;
     i:=j;
    end else begin
@@ -586,9 +581,8 @@ begin
  PrevIndex:=0;
 
  if CountArguments<2 then begin
-  ReplaceValue.ValueType:=bvtSTRING;
-  ReplaceValue.Str:='';
- end else if (Arguments^[1]^.ValueType=bvtOBJECT) and assigned(Arguments^[1]^.Obj) and TBESENObject(Arguments^[1]^.Obj).HasCall then begin
+  ReplaceValue:=BESENStringValue('');
+ end else if (BESENValueType(Arguments^[1]^)=bvtOBJECT) and TBESENObject(BESENValueObject(Arguments^[1]^)).HasCall then begin
   BESENCopyValue(ReplaceValue,Arguments^[1]^);
  end else begin
   TBESEN(Instance).ToStringValue(Arguments^[1]^,ReplaceValue);
@@ -596,57 +590,55 @@ begin
 
  RegExp.Get('exec',v);
 {$ifdef UseAssert}
- Assert((v.ValueType=bvtOBJECT) and assigned(TBESENObject(v.Obj)) and TBESENObject(v.Obj).HasCall);
+ Assert((BESENValueType(v)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(v))) and TBESENObject(BESENValueObject(v)).HasCall);
 {$endif}
- Exec:=TBESENObject(v.Obj);
+ Exec:=TBESENObject(BESENValueObject(v));
 
  RegExp.Get('global',v);
 {$ifdef UseAssert}
- Assert(v.ValueType=bvtBOOLEAN);
+ Assert(BESENValueType(v)=bvtBOOLEAN);
 {$endif}
- Global:=v.Bool;
+ Global:=BESENValueBoolean(v);
 
  HasOutputString:=false;
 
  if Global then begin
   RegExp.OverwriteData('lastIndex',BESENNumberValue(0),[bopaWRITABLE]);
   while true do begin
-   vs.ValueType:=bvtSTRING;
-   vs.Str:=s;
+   vs:=BESENStringValue(s);
    ValuePointers[0]:=@vs;
    TBESEN(Instance).ObjectCall(Exec,BESENObjectValue(RegExp),@ValuePointers,1,vr);
-   if vr.ValueType=bvtNULL then begin
+   if BESENValueType(vr)=bvtNULL then begin
     break;
    end;
 {$ifdef UseAssert}
-   Assert((vr.ValueType=bvtOBJECT) and assigned(TBESENObject(vr.Obj)) and (TBESENObject(vr.Obj) is TBESENObjectArray));
+   Assert((BESENValueType(vr)=bvtOBJECT) and (TBESENObject(BESENValueObject(vr)) is TBESENObjectArray));
 {$endif}
-   TBESENObject(vr.Obj).Get('0',v);
+   TBESENObject(BESENValueObject(vr)).Get('0',v);
 {$ifdef UseAssert}
-   Assert(v.ValueType=bvtSTRING);
+   Assert(BESENValueType(v)=bvtSTRING);
 {$endif}
-   if length(v.Str)<>0 then begin
-    Helper(PrevIndex,TBESENObject(vr.Obj),OutStr,s,ReplaceValue,CountCaptures);
+   if length(BESENValueString(v))<>0 then begin
+    Helper(PrevIndex,TBESENObject(BESENValueObject(vr)),OutStr,s,ReplaceValue,CountCaptures);
     HasOutputString:=true;
    end else begin
     RegExp.Get('lastIndex',v);
 {$ifdef UseAssert}
-    Assert(v.ValueType=bvtNUMBER);
+    Assert(BESENValueType(v)=bvtNUMBER);
 {$endif}
-    v.Num:=v.Num+1;
+    v:=BESENNumberValue(BESENValueNumber(v)+1);
     RegExp.OverwriteData('lastIndex',v,[bopaWRITABLE]);
    end;
   end;
  end else begin
-  v.ValueType:=bvtSTRING;
-  v.Str:=s;
+  vs:=BESENStringValue(s);
   ValuePointers[0]:=@v;
   TBESEN(Instance).ObjectCall(Exec,BESENObjectValue(RegExp),@ValuePointers,1,v2);
-  if v2.ValueType<>bvtNULL then begin
+  if BESENValueType(v2)<>bvtNULL then begin
 {$ifdef UseAssert}
-   Assert((v2.ValueType=bvtOBJECT) and assigned(v2.Obj) and (v2.Obj is TBESENObjectArray));
+   Assert((BESENValueType(v2)=bvtOBJECT) and (TBESENObject(BESENValueObject(v2)) is TBESENObjectArray));
 {$endif}
-   Helper(PrevIndex,TBESENObject(v2.Obj),OutStr,s,ReplaceValue,CountCaptures);
+   Helper(PrevIndex,TBESENObject(BESENValueObject(v2)),OutStr,s,ReplaceValue,CountCaptures);
    HasOutputString:=true;
   end;
  end;
@@ -691,13 +683,13 @@ begin
 
  len:=length(s);
 
- if (CountArguments<1) or (Arguments^[0]^.ValueType=bvtUNDEFINED) then begin
+ if (CountArguments<1) or (BESENValueType(Arguments^[0]^)=bvtUNDEFINED) then begin
   intStart:=0;
  end else begin
   intStart:=TBESEN(Instance).ToInt(Arguments^[0]^);
  end;
 
- if (CountArguments<2) or (Arguments^[1]^.ValueType=bvtUNDEFINED) then begin
+ if (CountArguments<2) or (BESENValueType(Arguments^[1]^)=bvtUNDEFINED) then begin
   intEnd:=len;
  end else begin
   intEnd:=TBESEN(Instance).ToInt(Arguments^[1]^);
@@ -728,14 +720,14 @@ procedure TBESENObjectStringPrototype.NativeSplit(const ThisArgument:TBESENValue
  function SplitMatch(var r:TBESENValue;var s:TBESENString;q:integer;var Captures:TBESENRegExpCaptures):boolean;
  var rl,sl,i:integer;
  begin
-  if r.ValueType<>bvtOBJECT then begin
-   rl:=length(r.Str);
+  if BESENValueType(r)<>bvtOBJECT then begin
+   rl:=length(BESENValueString(r));
    sl:=length(s);
    if (q+rl)>sl then begin
     result:=false;
    end else begin
     for i:=0 to rl-1 do begin
-     if s[q+i+1]<>r.Str[i+1] then begin
+     if s[q+i+1]<>BESENValueString(r)[i+1] then begin
       result:=false;
       exit;
      end;
@@ -745,7 +737,7 @@ procedure TBESENObjectStringPrototype.NativeSplit(const ThisArgument:TBESENValue
     result:=true;
    end;
   end else begin
-   result:=TBESENObjectRegExp(R.Obj).Engine.Match(s,q,Captures);
+   result:=TBESENObjectRegExp(BESENValueObject(r)).Engine.Match(s,q,Captures);
   end;
  end;
 var v,av,r:TBESENValue;
@@ -768,7 +760,7 @@ begin
  try
   ResultValue:=BESENObjectValue(a);
 
-  if (CountArguments<2) or (Arguments^[1]^.ValueType=bvtUNDEFINED) then begin
+  if (CountArguments<2) or (BESENValueType(Arguments^[1]^)=bvtUNDEFINED) then begin
    lim:=$ffffffff;
   end else begin
    lim:=TBESEN(Instance).ToUInt32(Arguments^[1]^);
@@ -787,12 +779,12 @@ begin
    Captures:=nil;
    try
     p:=0;
-    if (CountArguments<1) or (Arguments^[0]^.ValueType=bvtUNDEFINED) then begin
+    if (CountArguments<1) or (BESENValueType(Arguments^[0]^)=bvtUNDEFINED) then begin
      r:=BESENStringValue('undefined');
      CountCaptures:=1;
-    end else if (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj) and (Arguments^[0]^.Obj is TBESENObjectRegExp) then begin
+    end else if (BESENValueType(Arguments^[0]^)=bvtOBJECT) and (TBESENObject(BESENValueObject(Arguments^[0]^)) is TBESENObjectRegExp) then begin
      BESENCopyValue(r,Arguments^[0]^);
-     CountCaptures:=TBESENObjectRegExp(Arguments^[0]^.Obj).Engine.CountOfCaptures;
+     CountCaptures:=TBESENObjectRegExp(BESENValueObject(Arguments^[0]^)).Engine.CountOfCaptures;
     end else begin
      rs:=TBESEN(Instance).ToStr(Arguments^[0]^);
      if ((TBESEN(Instance).Compatibility and COMPAT_JS)<>0) and (rs=' ') then begin
@@ -811,7 +803,7 @@ begin
      SetLength(Captures,CountCaptures);
     end;
     if lim>0 then begin
-     if (CountArguments<1) or ((Arguments^[0]^.ValueType=bvtUNDEFINED) and ((TBESEN(Instance).Compatibility and COMPAT_JS)=0)) then begin
+     if (CountArguments<1) or ((BESENValueType(Arguments^[0]^)=bvtUNDEFINED) and ((TBESEN(Instance).Compatibility and COMPAT_JS)=0)) then begin
       v:=BESENStringValue(s);
       a.Push(v);
      end else if length(s)=0 then begin
@@ -896,21 +888,21 @@ begin
   a:=0;
  end else begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
-  if BESENIsNaN(v.Num) then begin
+  if BESENIsNaN(BESENValueNumber(v)) then begin
    a:=0;
   end else begin
-   a:=trunc(min(max(v.Num,0),length(s)));
+   a:=trunc(min(max(BESENValueNumber(v),0),length(s)));
   end;
  end;
 
- if (CountArguments<2) or (Arguments^[1]^.ValueType=bvtUNDEFINED) then begin
+ if (CountArguments<2) or (BESENValueType(Arguments^[1]^)=bvtUNDEFINED) then begin
   b:=length(s);
  end else begin
   TBESEN(Instance).ToIntegerValue(Arguments^[1]^,v);
-  if BESENIsNaN(v.Num) then begin
+  if BESENIsNaN(BESENValueNumber(v)) then begin
    b:=0;
   end else begin
-   b:=trunc(min(max(v.Num,0),length(s)));
+   b:=trunc(min(max(BESENValueNumber(v),0),length(s)));
   end;
  end;
 
@@ -982,13 +974,13 @@ begin
  end else begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
  end;
- if BESENIsNegative(v.Num) then begin
-  ss:=trunc(max(v.Num+length(s),0));
+ if BESENIsNegative(BESENValueNumber(v)) then begin
+  ss:=trunc(max(BESENValueNumber(v)+length(s),0));
  end else begin
-  ss:=trunc(min(v.Num,length(s)));
+  ss:=trunc(min(BESENValueNumber(v),length(s)));
  end;
 
- if (CountArguments<2) or (Arguments^[1]^.ValueType=bvtUNDEFINED) then begin
+ if (CountArguments<2) or (BESENValueType(Arguments^[1]^)=bvtUNDEFINED) then begin
   sl:=length(s)-ss;
  end else begin
   sl:=min(TBESEN(Instance).ToInt(Arguments^[1]^),length(s)-ss);
@@ -1003,7 +995,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeAnchor(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1011,7 +1003,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeBig(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1019,7 +1011,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeBlink(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1027,7 +1019,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeBold(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1035,7 +1027,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeFixed(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1043,7 +1035,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeFontColor(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1051,7 +1043,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeFontSize(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1059,7 +1051,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeItalics(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1067,7 +1059,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeLink(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1075,7 +1067,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeSmall(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1083,7 +1075,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeStrike(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1091,7 +1083,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeSub(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');
@@ -1099,7 +1091,7 @@ end;
 
 procedure TBESENObjectStringPrototype.NativeSup(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)) )) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  ResultValue:=BESENStringValue('');

@@ -157,18 +157,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd mmm dd yyyy hh:nn:ss',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENDefaultFormatSettings)+' GMT'+BESENGetDateTimeOffsetString(BESENGetLocalDateTimeZone));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd mmm dd yyyy hh:nn:ss',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENDefaultFormatSettings)+' GMT'+BESENGetDateTimeOffsetString(BESENGetLocalDateTimeZone));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -177,18 +177,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToDateString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd mmm dd yyy',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENDefaultFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd mmm dd yyy',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENDefaultFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -197,18 +197,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToTimeString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('hh:nn:ss',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENDefaultFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('hh:nn:ss',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENDefaultFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -217,18 +217,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToLocaleString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('dddddd tt',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENLocaleFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('dddddd tt',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENLocaleFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -237,18 +237,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToLocaleDateString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('dddddd',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENLocaleFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('dddddd',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENLocaleFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -257,18 +257,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToLocaleTimeString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('tt',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)),BESENLocaleFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('tt',BESENUTCToLocalDateTime(BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)),BESENLocaleFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -277,18 +277,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToUTCString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd, dd mmm yyyy hh:nn:ss',BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value),BESENDefaultFormatSettings)+' GMT');
+   ResultValue:=BESENStringValue(BESENFormatDateTime('ddd, dd mmm yyyy hh:nn:ss',BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value),BESENDefaultFormatSettings)+' GMT');
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -298,11 +298,11 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeValueOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -310,11 +310,11 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetTime(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -322,14 +322,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetFullYear(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENYearFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENYearFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -338,14 +338,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCFullYear(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENYearFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENYearFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -354,14 +354,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetMonth(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMonthFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENMonthFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -370,14 +370,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCMonth(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMonthFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENMonthFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -386,14 +386,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetDate(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENDayFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENDayFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -402,14 +402,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCDate(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENDayFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENDayFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -418,14 +418,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetDay(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENWeekDay(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENWeekDay(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -434,14 +434,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCDay(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENWeekDay(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENWeekDay(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -450,14 +450,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetHours(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENHourFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENHourFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -466,14 +466,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCHours(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENHourFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENHourFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -482,14 +482,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetMinutes(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMinuteFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENMinuteFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -498,14 +498,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCMinutes(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMinuteFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENMinuteFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -514,14 +514,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetSeconds(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENSecondFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENSecondFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -530,14 +530,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCSeconds(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENSecondFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENSecondFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -546,14 +546,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetMilliseconds(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMillisecondFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value)));
+   ResultValue:=BESENNumberValue(BESENMillisecondFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value)));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -562,14 +562,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetUTCMilliseconds(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENMillisecondFromTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value));
+   ResultValue:=BESENNumberValue(BESENMillisecondFromTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value));
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -578,14 +578,14 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeGetTimezoneOffset(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue((TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value-BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value))/BESENmsPerMinute);
+   ResultValue:=BESENNumberValue((TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value-BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value))/BESENmsPerMinute);
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -594,16 +594,16 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeSetTime(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(TBESEN(Instance).ToNum(Arguments^[0]^));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(TBESEN(Instance).ToNum(Arguments^[0]^));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -613,18 +613,18 @@ procedure TBESENObjectDatePrototype.NativeSetMilliseconds(const ThisArgument:TBE
 var t:TBESENDate;
     ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    ms:=TBESEN(Instance).ToNum(Arguments^[0]^);
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),BESENSecondFromTime(t),ms))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),BESENSecondFromTime(t),ms))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -634,18 +634,18 @@ procedure TBESENObjectDatePrototype.NativeSetUTCMilliseconds(const ThisArgument:
 var t:TBESENDate;
     ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    ms:=TBESEN(Instance).ToNum(Arguments^[0]^);
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),BESENSecondFromTime(t),ms)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),BESENSecondFromTime(t),ms)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -655,23 +655,23 @@ procedure TBESENObjectDatePrototype.NativeSetSeconds(const ThisArgument:TBESENVa
 var t:TBESENDate;
     Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Seconds:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     ms:=TBESEN(Instance).ToNum(Arguments^[1]^);
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),Seconds,ms))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),Seconds,ms))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -681,23 +681,23 @@ procedure TBESENObjectDatePrototype.NativeSetUTCSeconds(const ThisArgument:TBESE
 var t:TBESENDate;
     Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Seconds:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     ms:=TBESEN(Instance).ToNum(Arguments^[1]^);
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),Seconds,ms)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),BESENMinuteFromTime(t),Seconds,ms)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -707,14 +707,14 @@ procedure TBESENObjectDatePrototype.NativeSetMinutes(const ThisArgument:TBESENVa
 var t:TBESENDate;
     Minutes,Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Minutes:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Seconds:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -726,9 +726,9 @@ begin
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),Minutes,Seconds,ms))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),Minutes,Seconds,ms))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -738,14 +738,14 @@ procedure TBESENObjectDatePrototype.NativeSetUTCMinutes(const ThisArgument:TBESE
 var t:TBESENDate;
     Minutes,Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Minutes:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Seconds:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -757,9 +757,9 @@ begin
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),Minutes,Seconds,ms)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(BESENHourFromTime(t),Minutes,Seconds,ms)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -769,14 +769,14 @@ procedure TBESENObjectDatePrototype.NativeSetHours(const ThisArgument:TBESENValu
 var t:TBESENDate;
     Hours,Minutes,Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Hours:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Minutes:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -793,9 +793,9 @@ begin
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(Hours,Minutes,Seconds,ms))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENDay(t),BESENMakeTime(Hours,Minutes,Seconds,ms))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -805,14 +805,14 @@ procedure TBESENObjectDatePrototype.NativeSetUTCHours(const ThisArgument:TBESENV
 var t:TBESENDate;
     Hours,Minutes,Seconds,ms:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Hours:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Minutes:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -829,9 +829,9 @@ begin
    end else begin
     ms:=BESENMillisecondFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(Hours,Minutes,Seconds,ms)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENDay(t),BESENMakeTime(Hours,Minutes,Seconds,ms)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -841,18 +841,18 @@ procedure TBESENObjectDatePrototype.NativeSetDate(const ThisArgument:TBESENValue
 var t:TBESENDate;
     Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Date:=TBESEN(Instance).ToNum(Arguments^[0]^);
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),BESENMonthFromTime(t),Date),BESENTimeWithinDay(t))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),BESENMonthFromTime(t),Date),BESENTimeWithinDay(t))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -862,18 +862,18 @@ procedure TBESENObjectDatePrototype.NativeSetUTCDate(const ThisArgument:TBESENVa
 var t:TBESENDate;
     Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Date:=TBESEN(Instance).ToNum(Arguments^[0]^);
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),BESENMonthFromTime(t),Date),BESENTimeWithinDay(t)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),BESENMonthFromTime(t),Date),BESENTimeWithinDay(t)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -883,23 +883,23 @@ procedure TBESENObjectDatePrototype.NativeSetMonth(const ThisArgument:TBESENValu
 var t:TBESENDate;
     Month,Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Month:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Date:=TBESEN(Instance).ToNum(Arguments^[1]^);
    end else begin
     Date:=BESENDayFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),Month,Date),BESENTimeWithinDay(t))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),Month,Date),BESENTimeWithinDay(t))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -909,23 +909,23 @@ procedure TBESENObjectDatePrototype.NativeSetUTCMonth(const ThisArgument:TBESENV
 var t:TBESENDate;
     Month,Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Month:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Date:=TBESEN(Instance).ToNum(Arguments^[1]^);
    end else begin
     Date:=BESENDayFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),Month,Date),BESENTimeWithinDay(t)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(BESENYearFromTime(t),Month,Date),BESENTimeWithinDay(t)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -935,14 +935,14 @@ procedure TBESENObjectDatePrototype.NativeSetFullYear(const ThisArgument:TBESENV
 var t:TBESENDate;
     Year,Month,Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Year:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Month:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -954,9 +954,9 @@ begin
    end else begin
     Date:=BESENDayFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(Year,Month,Date),BESENTimeWithinDay(t))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(Year,Month,Date),BESENTimeWithinDay(t))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -966,14 +966,14 @@ procedure TBESENObjectDatePrototype.NativeSetUTCFullYear(const ThisArgument:TBES
 var t:TBESENDate;
     Year,Month,Date:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value;
+   t:=TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value;
    Year:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if CountArguments>1 then begin
     Month:=TBESEN(Instance).ToNum(Arguments^[1]^);
@@ -985,9 +985,9 @@ begin
    end else begin
     Date:=BESENDayFromTime(t);
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(Year,Month,Date),BESENTimeWithinDay(t)));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENMakeDate(BESENMakeDay(Year,Month,Date),BESENTimeWithinDay(t)));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;
@@ -1000,18 +1000,18 @@ end;
 
 procedure TBESENObjectDatePrototype.NativeToISOString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
     ResultValue:=BESENStringValue('Invalid Date');
    end else begin
     ResultValue:=BESENStringValue('NaN');
    end;
   end else begin
-   ResultValue:=BESENStringValue(BESENFormatDateTime('yyyy-mm-dd"T"hh:nn:ss.zzz"Z"',BESENDateToDateTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value),BESENDefaultFormatSettings));
+   ResultValue:=BESENStringValue(BESENFormatDateTime('yyyy-mm-dd"T"hh:nn:ss.zzz"Z"',BESENDateToDateTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value),BESENDefaultFormatSettings));
   end;
  end else begin
   raise EBESENTypeError.Create('Not date object');
@@ -1023,32 +1023,32 @@ var ov,tv:TBESENValue;
 begin
  TBESEN(Instance).ToObjectValue(ThisArgument,ov);
  TBESEN(Instance).ToPrimitiveValue(ov,TBESEN(Instance).ObjectNumberConstructorValue,tv);
- if (tv.ValueType=bvtNUMBER) and not BESENIsFinite(tv.Num) then begin
+ if (BESENValueType(tv)=bvtNUMBER) and not BESENIsFinite(BESENValueNumber(tv)) then begin
   ResultValue:=BESENNullValue;
  end else begin
-  TBESENObject(ov.Obj).GarbageCollectorLock;
+  TBESENObject(BESENValueObject(ov)).GarbageCollectorLock;
   try
-   TBESENObject(ov.Obj).Get('toISOString',tv);
+   TBESENObject(BESENValueObject(ov)).Get('toISOString',tv);
    if not BESENIsCallable(tv) then begin
     raise EBESENTypeError.Create('no "toISOString" callable object');
    end;
-   TBESEN(Instance).ObjectCall(TBESENObject(tv.Obj),ov,nil,0,ResultValue);
+   TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(tv)),ov,nil,0,ResultValue);
   finally
-   TBESENObject(ov.Obj).GarbageCollectorUnlock;
+   TBESENObject(BESENValueObject(ov)).GarbageCollectorUnlock;
   end;
  end;
 end;
 
 procedure TBESENObjectDatePrototype.NativeGetYear(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
-  if BESENIsNaN(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
+  if BESENIsNaN(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value) then begin
    ResultValue:=BESENNumberValue(double(pointer(@BESENDoubleNaN)^));
   end else begin
-   ResultValue:=BESENNumberValue(BESENYearFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value))-1900);
+   ResultValue:=BESENNumberValue(BESENYearFromTime(BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value))-1900);
   end;
  end else begin
   raise EBESENTypeError.Create('Not a date object');
@@ -1059,21 +1059,21 @@ procedure TBESENObjectDatePrototype.NativeSetYear(const ThisArgument:TBESENValue
 var t:TBESENDate;
     Year:TBESENNumber;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if assigned(TBESENObject(ThisArgument.Obj)) and (TBESENObject(ThisArgument.Obj) is TBESENObjectDate) then begin
+ if assigned(TBESENObject(BESENValueObject(ThisArgument))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectDate) then begin
   if CountArguments=0 then begin
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=double(pointer(@BESENDoubleNaN)^);
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=double(pointer(@BESENDoubleNaN)^);
   end else begin
-   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+   t:=BESENLocalTime(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
    Year:=TBESEN(Instance).ToNum(Arguments^[0]^);
    if (0<=Year) and (Year<=99) then begin
     Year:=Year+1900;
    end;
-   TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(Year,BESENMonthFromTime(t),BESENDayFromTime(t)),BESENTimeWithinDay(t))));
+   TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value:=BESENTimeClip(BESENUTC(BESENMakeDate(BESENMakeDay(Year,BESENMonthFromTime(t),BESENDayFromTime(t)),BESENTimeWithinDay(t))));
   end;
-  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(ThisArgument.Obj)).Value);
+  ResultValue:=BESENNumberValue(TBESENObjectDate(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a date object');
  end;

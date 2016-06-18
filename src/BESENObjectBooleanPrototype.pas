@@ -69,14 +69,14 @@ end;
 
 procedure TBESENObjectBooleanPrototype.NativeToString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if ThisArgument.ValueType=bvtBOOLEAN then begin
-  if ThisArgument.Bool then begin
+ if BESENValueType(ThisArgument)=bvtBOOLEAN then begin
+  if BESENValueBoolean(ThisArgument) then begin
    ResultValue:=BESENStringValue('true');
   end else begin
    ResultValue:=BESENStringValue('false');
   end;
- end else if (ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj)) then begin
-  if TBESENObjectBoolean(TBESENObject(ThisArgument.Obj)).Value then begin
+ end else if (BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument))) then begin
+  if TBESENObjectBoolean(TBESENObject(BESENValueObject(ThisArgument))).Value then begin
    ResultValue:=BESENStringValue('true');
   end else begin
    ResultValue:=BESENStringValue('false');
@@ -88,11 +88,10 @@ end;
 
 procedure TBESENObjectBooleanPrototype.NativeValueOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if ThisArgument.ValueType=bvtBOOLEAN then begin
+ if BESENValueType(ThisArgument)=bvtBOOLEAN then begin
   BESENCopyValue(ResultValue,ThisArgument);
- end else if (ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj)) then begin
-  ResultValue.ValueType:=bvtBOOLEAN;
-  ResultValue.Bool:=TBESENObjectBoolean(TBESENObject(ThisArgument.Obj)).Value;
+ end else if (BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument))) then begin
+  ResultValue:=BESENBooleanValue(TBESENObjectBoolean(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a boolean object');
  end;

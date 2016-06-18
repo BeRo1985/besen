@@ -65,12 +65,12 @@ end;
 
 procedure TBESENObjectDate.DefaultValue(const AHint:TBESENValue;var AResult:TBESENValue);
 begin
- case AHint.ValueType of
+ case BESENValueType(AHint) of
   bvtNUMBER,bvtSTRING:begin
    inherited DefaultValue(AHint,AResult);
   end;
   bvtOBJECT:begin
-   if AHint.Obj<>TBESEN(Instance).ObjectNumberConstructor then begin
+   if BESENValueObject(AHint)<>TBESEN(Instance).ObjectNumberConstructor then begin
     inherited DefaultValue(TBESEN(Instance).ObjectStringConstructorValue,AResult);
    end else begin
     inherited DefaultValue(AHint,AResult);

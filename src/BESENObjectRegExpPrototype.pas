@@ -74,13 +74,13 @@ var s:TBESENString;
     i:integer;
     c:widechar;
 begin
- if ((TBESEN(Instance).Compatibility and COMPAT_JS)<>0) and (((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj)))and (TBESENObject(ThisArgument.Obj) is TBESENObjectRegExpPrototype)) then begin
+ if ((TBESEN(Instance).Compatibility and COMPAT_JS)<>0) and (((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument))))and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectRegExpPrototype)) then begin
   ResultValue:=BESENStringValue('RegExp.prototype');
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectRegExp) then begin
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectRegExp) then begin
   s:='/';
   i:=1;
-  while i<=length(TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Source) do begin
-   c:=TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Source[i];
+  while i<=length(TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Source) do begin
+   c:=TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Source[i];
    case c of
     '/':begin
      s:=s+'\/';
@@ -89,8 +89,8 @@ begin
     '\':begin
      s:=s+'\\';
      inc(i);
-     if i<=length(TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Source) then begin
-      c:=TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Source[i];
+     if i<=length(TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Source) then begin
+      c:=TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Source[i];
       s:=s+c;
       inc(i);
      end;
@@ -102,13 +102,13 @@ begin
    end;
   end;
   s:=s+'/';
-  if brefGLOBAL in TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Flags then begin
+  if brefGLOBAL in TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Flags then begin
    s:=s+'g';
   end;
-  if brefIGNORECASE in TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Flags then begin
+  if brefIGNORECASE in TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Flags then begin
    s:=s+'i';
   end;
-  if brefMULTILINE in TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Flags then begin
+  if brefMULTILINE in TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Flags then begin
    s:=s+'m';
   end;
   ResultValue:=BESENStringValue(s);
@@ -123,22 +123,21 @@ var v,vo,vs:TBESENValue;
 begin
  Get('exec',v);
  TBESEN(Instance).ToObjectValue(v,vo);
- if (vo.ValueType<>bvtOBJECT) or not (assigned(TBESENObject(vo.Obj)) and TBESENObject(vo.Obj).HasCall) then begin
+ if (BESENValueType(vo)<>bvtOBJECT) or not (assigned(TBESENObject(BESENValueObject(vo))) and TBESENObject(BESENValueObject(vo)).HasCall) then begin
   raise EBESENTypeError.Create('No callable');
  end;
- TBESENObject(vo.Obj).GarbageCollectorLock;
+ TBESENObject(BESENValueObject(vo)).GarbageCollectorLock;
  try
   if CountArguments<1 then begin
    ValuePointers[0]:=@BESENUndefinedValue;
   end else begin
    ValuePointers[0]:=Arguments^[0];
   end;
-  TBESEN(Instance).ObjectCall(TBESENObject(vo.Obj),ThisArgument,@ValuePointers,1,vs);
+  TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(vo)),ThisArgument,@ValuePointers,1,vs);
  finally
-  TBESENObject(vo.Obj).GarbageCollectorUnlock;
+  TBESENObject(BESENValueObject(vo)).GarbageCollectorUnlock;
  end;
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=TBESEN(Instance).EqualityExpressionCompare(vs,BESENNullValue)<>0;
+ ResultValue:=BESENBooleanValue(TBESEN(Instance).EqualityExpressionCompare(vs,BESENNullValue)<>0);
 end;
 
 procedure TBESENObjectRegExpPrototype.NativeExec(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
@@ -148,10 +147,10 @@ var v,vi:TBESENValue;
     Captures:TBESENRegExpCaptures;
     o:TBESENObjectArray;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if not (TBESENObject(ThisArgument.Obj) is TBESENObjectRegExp) then begin
+ if not (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectRegExp) then begin
   raise EBESENTypeError.Create('Not a RegExp object');
  end;
  if CountArguments<1 then begin
@@ -163,42 +162,42 @@ begin
  i:=0;
 
  try
-  TBESENObject(ThisArgument.Obj).Get('lastIndex',v);
+  TBESENObject(BESENValueObject(ThisArgument)).Get('lastIndex',v);
   TBESEN(Instance).ToNumberValue(v,vi);
-  if not (brefGLOBAL in TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Flags) then begin
+  if not (brefGLOBAL in TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Flags) then begin
    v:=BESENNumberValue(0);
   end;
-  if (not BESENIsFinite(v.Num)) or (v.Num<0) or (v.Num>length(s)) then begin
-   TBESENObject(ThisArgument.Obj).Put('lastIndex',BESENNumberValue(0),true);
+  if (not BESENIsFinite(BESENValueNumber(v))) or (BESENValueNumber(v)<0) or (BESENValueNumber(v)>length(s)) then begin
+   TBESENObject(BESENValueObject(ThisArgument)).Put('lastIndex',BESENNumberValue(0),true);
    ResultValue:=BESENNullValue;
    exit;
   end;
-  i:=trunc(vi.Num);
+  i:=trunc(BESENValueNumber(vi));
  except
  end;
 
 {$ifdef UseAssert}
- Assert(TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.CountOfCaptures>0);
+ Assert(TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.CountOfCaptures>0);
 {$endif}
  Captures:=nil;
  try
-  SetLength(Captures,TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.CountOfCaptures);
-  while not TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Match(s,i,Captures) do begin
+  SetLength(Captures,TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.CountOfCaptures);
+  while not TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Match(s,i,Captures) do begin
    inc(i);
    if i>length(s) then begin
-    TBESENObject(ThisArgument.Obj).Put('lastIndex',BESENNumberValue(0),true);
+    TBESENObject(BESENValueObject(ThisArgument)).Put('lastIndex',BESENNumberValue(0),true);
     ResultValue:=BESENNullValue;
     for i:=0 to length(Captures)-1 do begin
      Captures[i].e:=brecUNDEFINED;
     end;
-    TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).SetStatic(s,Captures);
+    TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).SetStatic(s,Captures);
     SetLength(Captures,0);
     exit;
    end;
   end;
-  TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).SetStatic(s,Captures);
-  if brefGLOBAL in TBESENObjectRegExp(TBESENObject(ThisArgument.Obj)).Engine.Flags then begin
-   TBESENObject(ThisArgument.Obj).Put('lastIndex',BESENNumberValue(Captures[0].e),true);
+  TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).SetStatic(s,Captures);
+  if brefGLOBAL in TBESENObjectRegExp(TBESENObject(BESENValueObject(ThisArgument))).Engine.Flags then begin
+   TBESENObject(BESENValueObject(ThisArgument)).Put('lastIndex',BESENNumberValue(Captures[0].e),true);
   end;
   v:=BESENEmptyValue;
   o:=TBESENObjectArray.Create(Instance,TBESEN(Instance).ObjectArrayPrototype,false);

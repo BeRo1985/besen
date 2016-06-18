@@ -71,7 +71,8 @@ type PBESENValueType=^TBESENValueType;
      );
 
 const BESENUndefinedValueRaw=TBESENUInt64(BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtUNDEFINED)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
-      BESEBNullValueRaw=TBESENUInt64(BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtNULL)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
+      BESENNullValueRaw=TBESENUInt64(BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtNULL)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
+      BESENNoneValueRaw=TBESENUInt64(UInt64($8000000000000000) or BESENValueSignalingNaNMaskValue or (TBESENUInt64(TBESENUInt32(bvtUNDEFINED)) shl BESENValueSignalingNaNValueTypeShift) or BESENValueSignalingNaNValueTagMask);
 
 type TBESENReferenceBaseValueType=ptruint;
 

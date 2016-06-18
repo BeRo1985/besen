@@ -615,7 +615,7 @@ procedure TBESEN.RegisterNativeObject(const AName:TBESENString;const AClass:TBES
 var v:TBESENValue;
 begin
  v:=BESENObjectValue(AClass.Create(self,ObjectPrototype));
- GarbageCollector.AddRoot(BESENValueObject(v));
+ GarbageCollector.AddRoot(pointer(BESENValueObject(v)));
  ObjectGlobal.OverwriteData(AName,v,Attributes);
 end;
 
@@ -676,8 +676,8 @@ begin
    Obj.Get('prototype',vp);
    result:=false;
    if BESENValueType(vp)=bvtOBJECT then begin
-    o:=BESENValueObject(v);
-    op:=BESENValueObject(vp);
+    o:=TBESENObject(BESENValueObject(v));
+    op:=TBESENObject(BESENValueObject(vp));
     while assigned(o) do begin
      if o.Prototype=op then begin
       result:=true;
@@ -1696,10 +1696,10 @@ begin
   AResult:=BESENUndefinedValue;
  end else begin
   AResult:=BESENObjectValue(TBESENObject.Create(self,ObjectPrototype));
-  BESENValueType(bv):=bvtBOOLEAN;
+  bv:=BESENBooleanValue(false);
   if ([boppVALUE,boppWRITABLE]*Descriptor.Presents)<>[] then begin
    TBESENObject(BESENValueObject(AResult)).OverwriteData('value',Descriptor.Value,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE],false);
-   BESENValueBoolean(bv):=bopaWRITABLE in Descriptor.Attributes;
+   bv:=BESENBooleanValue(bopaWRITABLE in Descriptor.Attributes);
    TBESENObject(BESENValueObject(AResult)).OverwriteData('writable',bv,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE],false);
   end else if ([boppGETTER,boppSETTER]*Descriptor.Presents)<>[] then begin
    if boppGETTER in Descriptor.Presents then begin
@@ -1717,15 +1717,16 @@ begin
     end;
    end;
   end else begin
-   BESENFreeAndNil(BESENValueObject(AResult));
+   TBESENObject(BESENValueObject(AResult)).Free;
+   AResult:=BESENUndefinedValue;
    raise EBESENInternalError.Create('201003121938-0001');
   end;
   GarbageCollector.Add(TBESENObject(BESENValueObject(AResult)));
   TBESENObject(BESENValueObject(AResult)).GarbageCollectorLock;
   try
-   BESENValueBoolean(bv):=bopaENUMERABLE in Descriptor.Attributes;
+   bv:=BESENBooleanValue(bopaENUMERABLE in Descriptor.Attributes);
    TBESENObject(BESENValueObject(AResult)).OverwriteData('enumerable',bv,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE],false);
-   BESENValueBoolean(bv):=bopaCONFIGURABLE in Descriptor.Attributes;
+   bv:=BESENBooleanValue(bopaCONFIGURABLE in Descriptor.Attributes);
    TBESENObject(BESENValueObject(AResult)).OverwriteData('configurable',bv,[bopaWRITABLE,bopaENUMERABLE,bopaCONFIGURABLE],false);
   finally
    TBESENObject(BESENValueObject(AResult)).GarbageCollectorUnlock;
@@ -1801,9 +1802,9 @@ begin
     if vaNAN or vbNAN then begin
      result:=vaNAN and vbNAN;
     end else if (abs(BESENValueNumber(va))=0) and (abs(BESENValueNumber(vb))=0) then begin
-     result:=(int64(pointer(@BESENValueNumber(va))^) shr 63)=(int64(pointer(@BESENValueNumber(vb))^) shr 63);
+     result:=(int64(pointer(@va)^) shr 63)=(int64(pointer(@vb)^) shr 63);
     end else begin
-     result:=(int64(pointer(@BESENValueNumber(va))^)=int64(pointer(@BESENValueNumber(vb))^)) or (BESENValueNumber(va)=BESENValueNumber(vb));
+     result:=(int64(pointer(@va)^)=int64(pointer(@vb)^)) or (BESENValueNumber(va)=BESENValueNumber(vb));
     end;
    end;
    bvtSTRING:begin

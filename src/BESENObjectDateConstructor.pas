@@ -83,7 +83,7 @@ begin
    r1.Value:=BESENTimeClip(BESENDateTimeToBESENDate(BESENGetUTCDateTime));
   end else if CountArguments=1 then begin
    TBESEN(Instance).ToPrimitiveValue(Arguments^[0]^,TBESEN(Instance).ObjectNumberConstructorValue,r3);
-   if r3.ValueType<>bvtSTRING then begin
+   if BESENValueType(r3)<>bvtSTRING then begin
     r1.Value:=BESENTimeClip(TBESEN(Instance).ToNum(r3));
    end else begin
     s:=TBESEN(Instance).ToStr(r3);

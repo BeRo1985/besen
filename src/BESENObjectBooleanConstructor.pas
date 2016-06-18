@@ -76,15 +76,13 @@ begin
  finally
   r1.GarbageCollectorUnlock;
  end;
- AResult.ValueType:=bvtOBJECT;
- AResult.Obj:=r1;
+ AResult:=BESENObjectValue(r1);
 end;
 
 procedure TBESENObjectBooleanConstructor.Call(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var AResult:TBESENValue);
 begin
  if CountArguments<1 then begin
-  AResult.ValueType:=bvtBOOLEAN;
-  AResult.Bool:=false;
+  AResult:=BESENBooleanValue(false);
  end else begin
   TBESEN(Instance).ToBooleanValue(Arguments^[0]^,AResult);
  end;

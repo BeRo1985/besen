@@ -74,10 +74,10 @@ begin
  TBESEN(Instance).GarbageCollector.Add(r1);
  r1.GarbageCollectorLock;
  try
-  if (CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) and assigned(Arguments^[0]^.Obj) and (Arguments^[0]^.Obj is TBESENObjectRegExp) then begin
-   r1.Engine:=TBESENObjectRegExp(Arguments^[0]^.Obj).Engine;
+  if (CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) and (TBESENObject(BESENValueObject(Arguments^[0]^)) is TBESENObjectRegExp) then begin
+   r1.Engine:=TBESENObjectRegExp(BESENValueObject(Arguments^[0]^)).Engine;
   end else begin
-   if (CountArguments<1) or (Arguments^[0]^.ValueType=bvtUNDEFINED) then begin
+   if (CountArguments<1) or (BESENValueType(Arguments^[0]^)=bvtUNDEFINED) then begin
     s:='';
    end else begin
     s:=TBESEN(Instance).ToStr(Arguments^[0]^);
@@ -131,24 +131,19 @@ begin
 
   r1.Engine.DebugDump;
 
-  v.ValueType:=bvtSTRING;
-  v.Str:=r1.Engine.Source;
+  v:=BESENStringValue(r1.Engine.Source);
   r1.OverwriteData('source',v,[]);
 
-  v.ValueType:=bvtBOOLEAN;
-  v.Bool:=brefGLOBAL in r1.Engine.Flags;
+  v:=BESENBooleanValue(brefGLOBAL in r1.Engine.Flags);
   r1.OverwriteData('global',v,[]);
 
-  v.ValueType:=bvtBOOLEAN;
-  v.Bool:=brefIGNORECASE in r1.Engine.Flags;
+  v:=BESENBooleanValue(brefIGNORECASE in r1.Engine.Flags);
   r1.OverwriteData('ignoreCase',v,[]);
 
-  v.ValueType:=bvtBOOLEAN;
-  v.Bool:=brefMULTILINE in r1.Engine.Flags;
+  v:=BESENBooleanValue(brefMULTILINE in r1.Engine.Flags);
   r1.OverwriteData('multiline',v,[]);
 
-  v.ValueType:=bvtNUMBER;
-  v.Num:=0;
+  v:=BESENNumberValue(0);
   r1.OverwriteData('lastIndex',v,[bopaWRITABLE]);
  finally
   r1.GarbageCollectorUnlock;
@@ -174,7 +169,7 @@ end;
 function TBESENObjectRegExpConstructor.HasInstance(const AInstance:TBESENValue):TBESENBoolean;
 begin
  if (TBESEN(Instance).Compatibility and COMPAT_JS)<>0 then begin
-  result:=(AInstance.ValueType=bvtOBJECT) and assigned(AInstance.Obj) and (AInstance.Obj is TBESENObjectRegExp);
+  result:=(BESENValueType(AInstance)=bvtOBJECT) and (TBESENObject(BESENValueObject(AInstance)) is TBESENObjectRegExp);
  end else begin
   raise EBESENTypeError.Create('Has no instance');
  end;

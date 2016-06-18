@@ -140,7 +140,7 @@ begin
    SetLength(CallArgs,0);
   end;
  end else begin
-  AResult.ValueType:=bvtUNDEFINED;
+  AResult:=BESENUndefinedValue;
  end;
 end;
 

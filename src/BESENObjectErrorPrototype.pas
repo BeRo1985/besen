@@ -70,17 +70,17 @@ var nv,mv:TBESENValue;
     n,m:TBESENString;
 begin
  // ES5 errata fix
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- TBESENObjectError(TBESENObject(ThisArgument.Obj)).Get('name',nv);
- TBESENObjectError(TBESENObject(ThisArgument.Obj)).Get('message',mv);
- if nv.ValueType=bvtUNDEFINED then begin
+ TBESENObjectError(TBESENObject(BESENValueObject(ThisArgument))).Get('name',nv);
+ TBESENObjectError(TBESENObject(BESENValueObject(ThisArgument))).Get('message',mv);
+ if BESENValueType(nv)=bvtUNDEFINED then begin
   n:='Error';
  end else begin
   n:=TBESEN(Instance).ToStr(nv);
  end;
- if mv.ValueType=bvtUNDEFINED then begin
+ if BESENValueType(mv)=bvtUNDEFINED then begin
   m:='';
  end else begin
   m:=TBESEN(Instance).ToStr(mv);

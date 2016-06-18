@@ -79,10 +79,10 @@ procedure TBESENObjectNumberPrototype.NativeToString(const ThisArgument:TBESENVa
 var Radix:integer;
     nv:TBESENValue;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
@@ -94,19 +94,18 @@ begin
  if Radix=10 then begin
   TBESEN(Instance).ToStringValue(nv,ResultValue);
  end else if Radix in [2..36] then begin
-  ResultValue.ValueType:=bvtSTRING;
-  if BESENIsNaN(nv.Num) then begin
-   ResultValue.Str:='NaN';
-  end else if BESENIsZero(nv.Num) then begin
-   ResultValue.Str:='0';
-  end else if BESENIsInfinite(nv.Num) then begin
-   if BESENIsNegative(nv.Num) then begin
-    ResultValue.Str:='-Infinity';
+  if BESENIsNaN(BESENValueNumber(nv)) then begin
+   ResultValue:=BESENStringValue('NaN');
+  end else if BESENIsZero(BESENValueNumber(nv)) then begin
+   ResultValue:=BESENStringValue('0');
+  end else if BESENIsInfinite(BESENValueNumber(nv)) then begin
+   if BESENIsNegative(BESENValueNumber(nv)) then begin
+    ResultValue:=BESENStringValue('-Infinity');
    end else begin
-    ResultValue.Str:='Infinity';
+    ResultValue:=BESENStringValue('Infinity');
    end;
   end else begin
-   ResultValue.Str:=BESENNumberToRadixString(nv.Num,Radix);
+   ResultValue:=BESENStringValue(BESENNumberToRadixString(BESENValueNumber(nv),Radix));
   end;
  end else begin
   raise EBESENRangeError.Create('Bad radix');
@@ -116,22 +115,22 @@ end;
 procedure TBESENObjectNumberPrototype.NativeToLocaleString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var nv:TBESENValue;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
- ResultValue:=BESENStringValue(BESENFloatToLocaleStr(nv.Num));
+ ResultValue:=BESENStringValue(BESENFloatToLocaleStr(BESENValueNumber(nv)));
 end;
 
 procedure TBESENObjectNumberPrototype.NativeValueOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   ResultValue:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  ResultValue:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  ResultValue:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
@@ -143,28 +142,28 @@ var f:int64;
     v,nv:TBESENValue;
     x:TBESENNumber;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
  f:=0;
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
   if (TBESEN(Instance).Compatibility and COMPAT_BESEN)<>0 then begin
-   if BESENIsNaN(v.Num) or ((v.Num<0) or (v.Num>1076)) then begin
-    raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<0) or (BESENValueNumber(v)>1076)) then begin
+    raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end else begin
-   if BESENIsNaN(v.Num) or ((v.Num<0) or (v.Num>20)) then begin
-    raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<0) or (BESENValueNumber(v)>20)) then begin
+    raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end;
-  f:=trunc(v.Num);
+  f:=trunc(BESENValueNumber(v));
  end;
- x:=nv.Num;
+ x:=BESENValueNumber(nv);
  ResultValue.ValueType:=bvtSTRING;
  if (not BESENIsFinite(x)) or ((x<-1e+21) or (x>1e+21)) then begin
   ResultValue.Str:=BESENFloatToStr(x);
@@ -179,29 +178,28 @@ var f:int64;
     s:TBESENString;
     ss:shortstring;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
  f:=0;
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
-  if BESENIsNaN(v.Num) or ((v.Num<0) or (v.Num>20)) then begin
-   raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(v.Num)+' out of range');
+  if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<0) or (BESENValueNumber(v)>20)) then begin
+   raise EBESENRangeError.CreateUTF16('Fixed width '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
   end;
-  f:=trunc(v.Num);
+  f:=trunc(BESENValueNumber(v));
  end;
- x:=nv.Num;
- ResultValue.ValueType:=bvtSTRING;
+ x:=BESENValueNumber(nv);
  if (not BESENIsFinite(x)) or ((x<-1e+21) or (x>1e+21)) then begin
-  ResultValue.Str:=BESENFloatToStr(x);
+  ResultValue:=BESENStringValue(BESENFloatToStr(x));
  end else begin
   str(x:1:f,ss);
   s:=TBESENString(ss);
-  ResultValue.Str:=s;
+  ResultValue:=BESENStringValue(s);
  end;
 end;
 {$endif}
@@ -211,32 +209,32 @@ var v,nv:TBESENValue;
     x:TBESENNumber;
     f:integer;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
  f:=0;
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
   if (TBESEN(Instance).Compatibility and COMPAT_BESEN)<>0 then begin
-   if BESENIsNaN(v.Num) or ((v.Num<0) or (v.Num>1076)) then begin
-    raise EBESENRangeError.CreateUTF16('Exponent width '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<0) or (BESENValueNumber(v)>1076)) then begin
+    raise EBESENRangeError.CreateUTF16('Exponent width '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end else begin
-   if BESENIsNaN(v.Num) or ((v.Num<0) or (v.Num>20)) then begin
-    raise EBESENRangeError.CreateUTF16('Exponent width '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<0) or (BESENValueNumber(v)>20)) then begin
+    raise EBESENRangeError.CreateUTF16('Exponent width '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end;
-  f:=trunc(v.Num);
+  f:=trunc(BESENValueNumber(v));
  end;
- x:=nv.Num;
+ x:=BESENValueNumber(nv);
  if not BESENIsFinite(x) then begin
   ResultValue:=BESENStringValue(BESENFloatToStr(x));
  end else begin
-  if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+  if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
    ResultValue:=BESENStringValue(TBESENString(BESENDoubleToString(x,BESEN_DOUBLETOSTRINGMODE_EXPONENTIAL,f+1)));
   end else begin
    ResultValue:=BESENStringValue(TBESENString(BESENDoubleToString(x,BESEN_DOUBLETOSTRINGMODE_STANDARDEXPONENTIAL,0)));
@@ -249,28 +247,28 @@ var f:int64;
     v,nv:TBESENValue;
     x:TBESENNumber;
 begin
- if ThisArgument.ValueType=bvtNUMBER then begin
+ if BESENValueType(ThisArgument)=bvtNUMBER then begin
   nv:=ThisArgument;
- end else if ((ThisArgument.ValueType=bvtOBJECT) and assigned(TBESENObject(ThisArgument.Obj))) and (TBESENObject(ThisArgument.Obj) is TBESENObjectNumber) then begin
-  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(ThisArgument.Obj)).Value);
+ end else if ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(ThisArgument)))) and (TBESENObject(BESENValueObject(ThisArgument)) is TBESENObjectNumber) then begin
+  nv:=BESENNumberValue(TBESENObjectNumber(TBESENObject(BESENValueObject(ThisArgument))).Value);
  end else begin
   raise EBESENTypeError.Create('Not a Number object');
  end;
  f:=0;
- if (CountArguments>0) and (Arguments^[0]^.ValueType<>bvtUNDEFINED) then begin
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)<>bvtUNDEFINED) then begin
   TBESEN(Instance).ToIntegerValue(Arguments^[0]^,v);
   if (TBESEN(Instance).Compatibility and COMPAT_BESEN)<>0 then begin
-   if BESENIsNaN(v.Num) or ((v.Num<1) or (v.Num>1076)) then begin
-    raise EBESENRangeError.CreateUTF16('Precision '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<1) or (BESENValueNumber(v)>1076)) then begin
+    raise EBESENRangeError.CreateUTF16('Precision '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end else begin
-   if BESENIsNaN(v.Num) or ((v.Num<1) or (v.Num>21)) then begin
-    raise EBESENRangeError.CreateUTF16('Precision '+BESENFloatToStr(v.Num)+' out of range');
+   if BESENIsNaN(BESENValueNumber(v)) or ((BESENValueNumber(v)<1) or (BESENValueNumber(v)>21)) then begin
+    raise EBESENRangeError.CreateUTF16('Precision '+BESENFloatToStr(BESENValueNumber(v))+' out of range');
    end;
   end;
-  f:=trunc(v.Num);
+  f:=trunc(BESENValueNumber(v));
  end;
- x:=nv.Num;
+ x:=BESENValueNumber(nv);
  if (not BESENIsFinite(x)) or ((x<-1e+21) or (x>1e+21)) then begin
   ResultValue:=BESENStringValue(BESENFloatToStr(x));
  end else begin
