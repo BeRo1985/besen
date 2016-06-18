@@ -79,7 +79,7 @@ procedure TBESENObjectPrototype.NativeToString(const ThisArgument:TBESENValue;Ar
 var o:TBesenObject;
 begin
  // ES5 errata fix
- case ThisArgument.ValueType of
+ case BESENValueType(ThisArgument) of
   bvtUNDEFINED:begin
    ResultValue:=BESENStringValue('[object Undefined]');
   end;
@@ -115,8 +115,8 @@ begin
   o.GarbageCollectorLock;
   try
    o.Get('toString',v);
-   if (v.ValueType=bvtOBJECT) and assigned(TBESENObject(v.Obj)) and TBESENObject(v.Obj).HasCall then begin
-    TBESEN(Instance).ObjectCall(TBESENObject(v.Obj),ThisArgument,Arguments,CountArguments,ResultValue);
+   if (BESENValueType(v)=bvtOBJECT) and assigned(TBESENObject(BESENValueObject(v))) and TBESENObject(BESENValueObject(v)).HasCall then begin
+    TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(v)),ThisArgument,Arguments,CountArguments,ResultValue);
    end else begin
     BESENThrowTypeError('Null this object');
    end;
@@ -148,11 +148,10 @@ begin
  end;
  o.GarbageCollectorLock;
  try
-  ResultValue.ValueType:=bvtBOOLEAN;
   if CountArguments>0 then begin
-   ResultValue.Bool:=o.GetOwnProperty(TBESEN(Instance).ToStr(Arguments^[0]^),Descriptor);
+   ResultValue:=BESENBooleanValue(o.GetOwnProperty(TBESEN(Instance).ToStr(Arguments^[0]^),Descriptor));
   end else begin
-   ResultValue.Bool:=false;
+   ResultValue:=BESENBooleanValue(false);
   end;
  finally
   o.GarbageCollectorUnlock;
@@ -162,25 +161,24 @@ end;
 procedure TBESENObjectPrototype.NativeIsPrototypeOf(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var v,o:TBESENObject;
 begin
- ResultValue.ValueType:=bvtBOOLEAN;
- ResultValue.Bool:=false;
- if (CountArguments>0) and (Arguments^[0]^.ValueType=bvtOBJECT) then begin
+ ResultValue:=BESENBooleanValue(false);
+ if (CountArguments>0) and (BESENValueType(Arguments^[0]^)=bvtOBJECT) then begin
   o:=TBESEN(Instance).ToObj(ThisArgument);
   if not assigned(o) then begin
    raise EBESENTypeError.Create('Null this object');
   end;
   o.GarbageCollectorLock;
   try
-   v:=TBESENObject(Arguments^[0]^.Obj);
+   v:=TBESENObject(BESENValueObject(Arguments^[0]^));
    while assigned(v) do begin
     v:=v.Prototype;
     if assigned(v) then begin
      if o=v then begin
-      ResultValue.Bool:=true;
+      ResultValue:=BESENBooleanValue(true);
       break;
      end;
     end else begin
-     ResultValue.Bool:=false;
+     ResultValue:=BESENBooleanValue(false);
      break;
     end;
    end;
@@ -188,7 +186,7 @@ begin
    o.GarbageCollectorUnlock;
   end;
  end else begin
-  ResultValue.Bool:=false;
+  ResultValue:=BESENBooleanValue(false);
  end;
 end;
 
@@ -197,7 +195,6 @@ var Descriptor:TBESENObjectPropertyDescriptor;
     o:TBESENObject;
     s:TBESENString;
 begin
- ResultValue.ValueType:=bvtBOOLEAN;
  if CountArguments>0 then begin
   s:=TBESEN(Instance).ToStr(Arguments^[0]^);
   o:=TBESEN(Instance).ToObj(ThisArgument);
@@ -207,17 +204,16 @@ begin
   o.GarbageCollectorLock;
   try
    if o.GetOwnProperty(s,Descriptor) then begin
-    ResultValue.Bool:=(boppENUMERABLE in Descriptor.Presents) and (bopaENUMERABLE in Descriptor.Attributes);
+    ResultValue:=BESENBooleanValue((boppENUMERABLE in Descriptor.Presents) and (bopaENUMERABLE in Descriptor.Attributes));
    end else begin
-    ResultValue.Bool:=false;
+    ResultValue:=BESENBooleanValue(false);
    end;
   finally
    o.GarbageCollectorUnlock;
   end;
  end else begin
-  ResultValue.Bool:=false;
+  ResultValue:=BESENBooleanValue(false);
  end;
 end;
 
 end.
- 

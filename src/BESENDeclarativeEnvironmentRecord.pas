@@ -148,7 +148,7 @@ begin
   Item^.Previous:=nil;
   Item^.Next:=nil;
   Item^.Key:='';
-  Item^.Value.ValueType:=bvtUNDEFINED;
+  Item^.Value:=BESENUndefinedValue;
   Dispose(Item);
   Item:=NextItem;
  end;
@@ -177,7 +177,7 @@ var Item:PBESENDeclarativeEnvironmentRecordHashItem;
 begin
  Item:=First;
  while assigned(Item) do begin
-  Item^.Value.ValueType:=bvtUNDEFINED;
+  Item^.Value:=BESENUndefinedValue;
   Item^.Initialized:=Item^.Mutable;
   Item:=Item^.Next;
  end;
@@ -299,8 +299,7 @@ begin
   result^.Hash:=Hash;
   result^.Key:=Key;
   result^.Index:=-1;
-  result^.Value.ValueType:=bvtUNDEFINED;
-  //result^.Value:=BESENUndefinedValue;
+  result^.Value:=BESENUndefinedValue;
   result^.Mutable:=false;
   result^.Initialized:=false;
   result^.Deletion:=false;
@@ -390,7 +389,7 @@ begin
   BESENThrowTypeError('CreateMutableBinding for "'+N+'" failed');
  end;
  Item:=NewKey(N,false,Hash);
- Item^.Value.ValueType:=bvtUNDEFINED;
+ Item^.Value:=BESENUndefinedValue;
  Item^.Mutable:=true;
  Item^.Initialized:=false;
  Item^.Deletion:=D;
@@ -438,7 +437,7 @@ begin
    if S then begin
     ThrowUninitialized;
    end else begin
-    R.ValueType:=bvtUNDEFINED;
+    R:=BESENUndefinedValue;
    end;
   end;
  end else begin
@@ -468,8 +467,7 @@ end;
 
 procedure TBESENDeclarativeEnvironmentRecord.UpdateImplicitThisValue;
 begin
- ImplicitThisValue.ValueType:=bvtUNDEFINED;
- ImplicitThisValue.Obj:=nil;
+ ImplicitThisValue:=BESENUndefinedValue;
 end;
 
 function TBESENDeclarativeEnvironmentRecord.CreateImmutableBinding(const N:TBESENString;Hash:TBESENHash=0):TBESENBoolean;
@@ -479,7 +477,7 @@ begin
   BESENThrowTypeError('CreateImmutableBinding for "'+N+'" failed');
  end;
  Item:=NewKey(N,false,Hash);
- Item^.Value.ValueType:=bvtUNDEFINED;
+ Item^.Value:=BESENUndefinedValue;
  Item^.Mutable:=false;
  Item^.Initialized:=false;
  Item^.Deletion:=false;
@@ -562,7 +560,7 @@ begin
    if S then begin
     ThrowUninitialized;
    end else begin
-    R.ValueType:=bvtUNDEFINED;
+    R:=BESENUndefinedValue;
    end;
   end;
  end else begin

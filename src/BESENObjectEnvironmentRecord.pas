@@ -106,7 +106,7 @@ begin
   if S then begin
    ThrowIt;
   end else begin
-   R.ValueType:=bvtUNDEFINED;
+   R:=BESENUndefinedValue;
   end;
  end;
 end;
@@ -119,11 +119,9 @@ end;
 procedure TBESENObjectEnvironmentRecord.UpdateImplicitThisValue;
 begin
  if ProvideThis then begin
-  ImplicitThisValue.ValueType:=bvtOBJECT;
-  ImplicitThisValue.Obj:=BindingObject;
+  ImplicitThisValue:=BESENObjectValue(BindingObject);
  end else begin
-  ImplicitThisValue.ValueType:=bvtUNDEFINED;
-  ImplicitThisValue.Obj:=nil;
+  ImplicitThisValue:=BESENUndefinedValue;
  end;
 end;
 
@@ -143,7 +141,7 @@ begin
   if S then begin
    ThrowIt;
   end else begin
-   R.ValueType:=bvtUNDEFINED;
+   R:=BESENUndefinedValue;
   end;
  end;
 end;

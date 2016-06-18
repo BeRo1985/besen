@@ -83,15 +83,15 @@ var v,o:TBESENObject;
     ov:TBESENValue;
 begin
  result:=false;
- if AInstance.ValueType<>bvtOBJECT then begin
+ if BESENValueType(AInstance)<>bvtOBJECT then begin
   exit;
  end;
- v:=TBESENObject(AInstance.Obj);
+ v:=TBESENObject(BESENValueObject(AInstance));
  Get('prototype',ov);
- if ov.ValueType<>bvtOBJECT then begin
+ if BESENValueType(ov)<>bvtOBJECT then begin
   raise EBESENTypeError.Create('Prototype not object');
  end;
- o:=TBESENObject(ov.Obj);
+ o:=TBESENObject(BESENValueObject(ov));
  while true do begin
   v:=v.Prototype;
   if not assigned(v) then begin
