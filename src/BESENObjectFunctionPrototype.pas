@@ -84,8 +84,8 @@ end;
 procedure TBESENObjectFunctionPrototype.NativeToString(const ThisArgument:TBESENValue;Arguments:PPBESENValues;CountArguments:integer;var ResultValue:TBESENValue);
 var ThisArgumentObj:TObject;
 begin
- ThisArgumentObj:=ThisArgument.Obj;
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(ThisArgumentObj)) then begin
+ ThisArgumentObj:=BESENValueObject(ThisArgument);
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(ThisArgumentObj)) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
  if assigned(ThisArgumentObj) and (ThisArgumentObj is TBESENObjectDeclaredFunction) then begin
@@ -121,10 +121,10 @@ begin
  // ES5 errata fix
  vArgs:=nil;
  pArgs:=nil;
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(ThisArgument.Obj)) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(BESENValueObject(ThisArgument))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if not TBESENObject(ThisArgument.Obj).HasCall then begin
+ if not TBESENObject(BESENValueObject(ThisArgument)).HasCall then begin
   raise EBESENTypeError.Create('No callable');
  end;
  v2:=BESENEmptyValue;
@@ -134,25 +134,25 @@ begin
    CallThisArg:=BESENUndefinedValue;
   end else begin
    BESENCopyValue(CallThisArg,Arguments^[0]^);
-   if (CountArguments>1) and not (Arguments^[1]^.ValueType in [bvtUNDEFINED,bvtNULL]) then begin
+   if (CountArguments>1) and not (BESENValueType(Arguments^[1]^) in [bvtUNDEFINED,bvtNULL]) then begin
     TBESEN(Instance).ToObjectValue(Arguments^[1]^,v2);
-    if (v2.ValueType=bvtOBJECT) and assigned(v2.Obj) then begin
-     TBESENObject(v2.Obj).GarbageCollectorLock;
+    if (BESENValueType(v2)=bvtOBJECT) and assigned(BESENValueObject(v2)) then begin
+     TBESENObject(BESENValueObject(v2)).GarbageCollectorLock;
     end;
-    TBESENObject(v2.Obj).Get('length',v3,TBESENObject(v2.Obj),BESENLengthHash);
+    TBESENObject(BESENValueObject(v2)).Get('length',v3,TBESENObject(BESENValueObject(v2)),BESENLengthHash);
     j:=TBESEN(Instance).ToUInt32(v3);
     SetLength(vArgs,j);
     SetLength(pArgs,j);
     for i:=0 to j-1 do begin
-     TBESENObject(v2.Obj).Get(inttostr(i),vArgs[i]);
+     TBESENObject(BESENValueObject(v2)).Get(inttostr(i),vArgs[i]);
      pArgs[i]:=@vArgs[i];
     end;
    end;
   end;
-  TBESEN(Instance).ObjectCall(TBESENObject(ThisArgument.Obj),CallThisArg,@pArgs[0],length(pArgs),ResultValue);
+  TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(ThisArgument)),CallThisArg,@pArgs[0],length(pArgs),ResultValue);
  finally
-  if (v2.ValueType=bvtOBJECT) and assigned(v2.Obj) then begin
-   TBESENObject(v2.Obj).GarbageCollectorUnlock;
+  if (BESENValueType(v2)=bvtOBJECT) and assigned(BESENValueObject(v2)) then begin
+   TBESENObject(BESENValueObject(v2)).GarbageCollectorUnlock;
   end;
   SetLength(vArgs,0);
   SetLength(pArgs,0);
@@ -164,10 +164,10 @@ var CallThisArg:TBESENValue;
     pArgs:TBESENValuePointers;
     i:integer;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(ThisArgument.Obj)) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(BESENValueObject(ThisArgument))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if not TBESENObject(ThisArgument.Obj).HasCall then begin
+ if not TBESENObject(BESENValueObject(ThisArgument)).HasCall then begin
   raise EBESENTypeError.Create('No callable');
  end;
  pArgs:=nil;
@@ -183,7 +183,7 @@ begin
     end;
    end;
   end;
-  TBESEN(Instance).ObjectCall(TBESENObject(ThisArgument.Obj),CallThisArg,@pArgs[0],length(pArgs),ResultValue);
+  TBESEN(Instance).ObjectCall(TBESENObject(BESENValueObject(ThisArgument)),CallThisArg,@pArgs[0],length(pArgs),ResultValue);
  finally
   SetLength(pArgs,0);
  end;
@@ -194,21 +194,21 @@ var o:TBESENObjectBindingFunction;
     i:integer;
     v:TBESENValue;
 begin
- if not ((ThisArgument.ValueType=bvtOBJECT) and assigned(ThisArgument.Obj)) then begin
+ if not ((BESENValueType(ThisArgument)=bvtOBJECT) and assigned(BESENValueObject(ThisArgument))) then begin
   raise EBESENTypeError.Create('Null this object');
  end;
- if not TBESENObject(ThisArgument.Obj).HasCall then begin
+ if not TBESENObject(BESENValueObject(ThisArgument)).HasCall then begin
   raise EBESENTypeError.Create('Bad arg');
  end;                                                            
  o:=TBESENObjectBindingFunction.Create(Instance,TBESEN(Instance).ObjectFunctionPrototype,false);
  TBESEN(Instance).GarbageCollector.Add(o);
  o.GarbageCollectorLock;
  try
-  o.TargetFunction:=TBESENObject(ThisArgument.Obj);
+  o.TargetFunction:=TBESENObject(BESENValueObject(ThisArgument));
   if CountArguments>0 then begin
    BESENCopyValue(o.BoundThis,Arguments^[0]^);
   end else begin
-   o.BoundThis.ValueType:=bvtUNDEFINED;
+   o.BoundThis:=BESENUndefinedValue;
   end;
   if CountArguments>1 then begin
    SetLength(o.BoundArguments,CountArguments-1);

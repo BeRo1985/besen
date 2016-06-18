@@ -90,7 +90,7 @@ begin
  if assigned(Native) then begin
   Native(ThisArgument,Arguments,CountArguments,AResult);
  end else begin
-  AResult.ValueType:=bvtUNDEFINED;
+  AResult:=BESENUndefinedValue;
  end;
 end;
 

@@ -93,10 +93,9 @@ begin
     f:=TBESEN(Instance).MakeFunction(TBESENASTNodeFunctionExpression(Node).Container.Literal,'',TBESEN(Instance).GlobalLexicalEnvironment);
    end;
    TBESEN(Instance).GarbageCollector.Add(f);
-   AResult.ValueType:=bvtOBJECT;
-   AResult.Obj:=f;
+   AResult:=BESENObjectValue(f);
   end else begin
-   AResult.ValueType:=bvtUNDEFINED;
+   AResult:=BESENUndefinedValue;
   end;
   BESENFreeAndNil(Node);
  finally
