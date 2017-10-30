@@ -32,7 +32,7 @@ unit BESENConstants;
 {$i BESEN.inc}
 
 
-{$define THRhash }
+{$define THRhash}
 
 
 
