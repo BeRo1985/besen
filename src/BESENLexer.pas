@@ -194,7 +194,7 @@ const KeywordNames:array[TKeywordToken] of TBESENUTF16STRING=
 
       Keywords:TKeywords=nil;
 
-{$ifdef THRhash}
+{$ifdef THRhash2}
       KeywordsHash:TKeywordsHash=nil;
 {$endif}
 
@@ -563,7 +563,7 @@ var c:TBESENUTF32CHAR;
 
  function FindKeyword(const Name:TBESENUTF16STRING):TBESENLexerTokenType;
  var LowIndex,HighIndex,MiddleIndex:integer;
- {$ifdef THRhash}
+ {$ifdef THRhash2}
  aHash: TBESENHash;
  {$endif}
  begin
@@ -571,7 +571,7 @@ var c:TBESENUTF32CHAR;
   LowIndex:=0;
   HighIndex:=length(Keywords)-1;
 
-  {$ifdef THRhash}
+  {$ifdef THRhash2}
   aHash:=thrHashKey(Name);
   while LowIndex<=HighIndex do begin
    case (HighIndex-LowIndex)+1 of
@@ -1436,7 +1436,7 @@ begin
 
  SetLength(Keywords,sz);
 
-{$ifdef THRhash} 
+{$ifdef THRhash2} 
  //tigra: add hash calc of keys
  SetLength(KeywordsHash,sz);
 {$endif}
@@ -1445,7 +1445,7 @@ begin
  for kt:=low(TKeywordToken) to high(TKeywordToken) do begin
   Keywords[i]:=kt;
 
-{$ifdef THRhash}  
+{$ifdef THRhash2}  
   //tigra: calc hash and store
   KeywordsHash[i]:=thrHashKey(KeywordNames[kt]);
  {$endif} 
@@ -1454,7 +1454,7 @@ begin
  
  //sort keywords by keywordNames
  
- {$ifdef THRhash}
+ {$ifdef THRhash2}
  i:=0;
  while (i+1)<length(Keywords) do begin
   if KeywordsHash[Keywords[i]]>KeywordsHash[Keywords[i+1]] then begin
@@ -1493,7 +1493,7 @@ end;
 procedure DoneKeywords;
 begin
  SetLength(Keywords,0);
-{$ifdef THRhash}       
+{$ifdef THRhash2}       
  SetLength(KeywordsHash,0);
 {$endif}
 end;

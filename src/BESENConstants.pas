@@ -33,6 +33,7 @@ unit BESENConstants;
 
 
 {$define THRhash}
+{$define THRhash2}
 
 
 
