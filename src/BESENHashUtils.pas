@@ -31,9 +31,16 @@ or contact:
 unit BESENHashUtils;
 {$i BESEN.inc}
 
+{$define THRhash}
+
 interface
 
 uses BESENConstants,BESENTypes;
+
+
+{$ifdef THRhash}
+uses thrHashUtils;
+{$endif}
 
 function BESENHashKey(const Key:TBESENString):TBESENHash;
 function BESENDoubleHash(Hash:TBESENHash):TBESENHash;
@@ -41,6 +48,11 @@ function BESENDoubleHash(Hash:TBESENHash):TBESENHash;
 implementation
 
 function BESENHashKey(const Key:TBESENString):TBESENHash;
+{$ifdef THRhash}
+begin
+	result:=thrHashKey(key);
+end;
+{$else}
 {$ifdef PurePascal}
 var i,h:longword;
 begin
@@ -143,6 +155,7 @@ begin
  end;
  result:=h-ord(h=0);
 end;
+{$endif}
 {$endif}
 {$endif}
 {$endif}
