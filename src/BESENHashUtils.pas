@@ -30,7 +30,6 @@ or contact:
 *******************************************************************************)
 unit BESENHashUtils;
 {$i BESEN.inc}
-{$define THRhash}
 
 interface
 

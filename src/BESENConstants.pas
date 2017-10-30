@@ -31,6 +31,11 @@ or contact:
 unit BESENConstants;
 {$i BESEN.inc}
 
+
+{$define THRhash }
+
+
+
 interface
 
 uses Math;

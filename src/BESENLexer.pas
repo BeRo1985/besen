@@ -161,13 +161,18 @@ const BESENLexerReservedTokens:TBESENLexerTokenTypeSet=[ltkCLASS,ltkCONST,ltkENU
 
 implementation
 
-uses {$ifdef BESENEmbarcaderoNextGen}System.Character,{$endif}BESEN,BESENRegExp,BESENErrors,BESENNumberUtils;
+uses {$ifdef BESENEmbarcaderoNextGen}System.Character,{$endif}BESEN,BESENRegExp,BESENErrors,BESENNumberUtils
+{$ifdef THRhash}
+,thrHashUtils
+{$endif}
+;
 
 type TKeywordToken=ltkBREAK..ltkYIELD;
 
      TKeyword=TKeywordToken;
 
      TKeywords=array of TKeyword;
+     TKeywordsHash=array of TBESENHash;
 
 const KeywordNames:array[TKeywordToken] of TBESENUTF16STRING=
        (// Used keywords
@@ -188,6 +193,10 @@ const KeywordNames:array[TKeywordToken] of TBESENUTF16STRING=
         'yield');
 
       Keywords:TKeywords=nil;
+
+{$ifdef THRhash}
+      KeywordsHash:TKeywordsHash=nil;
+{$endif}
 
 constructor TBESENLexer.Create(AInstance:TObject);
 begin
@@ -550,12 +559,61 @@ var c:TBESENUTF32CHAR;
 
   s:='';
  end;
+
+
  function FindKeyword(const Name:TBESENUTF16STRING):TBESENLexerTokenType;
  var LowIndex,HighIndex,MiddleIndex:integer;
+ {$ifdef THRhash}
+ aHash: TBESENHash;
+ {$endif}
  begin
   result:=lttIDENTIFIER;
   LowIndex:=0;
   HighIndex:=length(Keywords)-1;
+
+  {$ifdef THRhash}
+  aHash:=thrHashKey(Name);
+  while LowIndex<=HighIndex do begin
+   case (HighIndex-LowIndex)+1 of
+    1:begin
+     if KeywordsHash[
+     Keywords[LowIndex]
+     ]=aHash then begin
+      result:=Keywords[LowIndex];
+     end;
+    end;
+    2:begin
+     if KeywordsHash[
+     Keywords[LowIndex]
+     ]=aHash then begin
+      result:=Keywords[LowIndex];
+     end else if KeywordsHash[
+     Keywords[HighIndex]
+     ]=aHash then begin
+      result:=Keywords[HighIndex];
+     end;
+    end;
+    else begin
+     MiddleIndex:=(LowIndex+HighIndex) div 2;
+     if KeywordsHash[
+     Keywords[MiddleIndex]
+     ]=aHash then begin
+      result:=Keywords[MiddleIndex];
+     end else if LowIndex<>HighIndex then begin
+      if KeywordsHash[
+      Keywords[MiddleIndex]
+      ]>aHash then begin
+       HighIndex:=MiddleIndex-1;
+      end else begin
+       LowIndex:=MiddleIndex+1;
+      end;
+      continue;
+     end;
+    end;
+   end;
+   break;
+  end;
+  {$else}
   while LowIndex<=HighIndex do begin
    case (HighIndex-LowIndex)+1 of
     1:begin
@@ -586,6 +644,8 @@ var c:TBESENUTF32CHAR;
    end;
    break;
   end;
+
+  {$endif}
  end;
 begin
  AResult.Name:='';
@@ -1370,13 +1430,47 @@ procedure InitKeywords;
 var kt:TKeywordToken;
     i:integer;
     k:TKeyword;
+	sz:integer;
 begin
- SetLength(Keywords,(integer(high(TKeywordToken))-integer(low(TKeywordToken)))+1);
+ sz:=(integer(high(TKeywordToken))-integer(low(TKeywordToken)))+1;
+
+ SetLength(Keywords,sz);
+
+{$ifdef THRhash} 
+ //tigra: add hash calc of keys
+ SetLength(KeywordsHash,sz);
+{$endif}
+ 
  i:=0;
  for kt:=low(TKeywordToken) to high(TKeywordToken) do begin
   Keywords[i]:=kt;
+
+{$ifdef THRhash}  
+  //tigra: calc hash and store
+  KeywordsHash[i]:=thrHashKey(KeywordNames[kt]);
+ {$endif} 
   inc(i);
  end;
+ 
+ //sort keywords by keywordNames
+ 
+ {$ifdef THRhash}
+ i:=0;
+ while (i+1)<length(Keywords) do begin
+  if KeywordsHash[Keywords[i]]>KeywordsHash[Keywords[i+1]] then begin
+   k:=Keywords[i];
+   Keywords[i]:=Keywords[i+1];
+   Keywords[i+1]:=k;
+   if i>0 then begin
+    dec(i);
+   end else begin
+    inc(i);
+   end;
+  end else begin
+   inc(i);
+  end;
+ end;
+ {$else}
  i:=0;
  while (i+1)<length(Keywords) do begin
   if KeywordNames[Keywords[i]]>KeywordNames[Keywords[i+1]] then begin
@@ -1392,11 +1486,16 @@ begin
    inc(i);
   end;
  end;
+ {$endif}
+ 
 end;
 
 procedure DoneKeywords;
 begin
  SetLength(Keywords,0);
+{$ifdef THRhash}       
+ SetLength(KeywordsHash,0);
+{$endif}
 end;
 
 procedure InitBESEN;

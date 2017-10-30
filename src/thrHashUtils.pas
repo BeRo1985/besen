@@ -2,7 +2,7 @@ unit thrHashUtils;
 
 interface
 
-uses BESENConstants,BESENTypes;
+uses BESENTypes;
 
 function thrHashKey(const Key:TBESENString):TBESENHash;
 
