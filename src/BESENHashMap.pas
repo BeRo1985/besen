@@ -175,19 +175,38 @@ begin
 end;
 
 function TBESENHashMap.GetKey(const Key:TBESENString;Hash:TBESENHash=0):PBESENHashMapItem;
+var aHash:TBESENHash;
 begin
+aHash:=Hash;
+
+  {$ifdef THRhash}
+ if assigned(LastUsedItem) and (LastUsedItem^.Hash=aHash) then begin
+ {$else}
  if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) then begin
+ {$endif}
+ 
   result:=LastUsedItem;
   Hash:=result^.Hash;
+  aHash:=Hash;
  end else begin
   if Hash=0 then begin
    Hash:=BESENHashKey(Key);
+   aHash:=Hash;
   end;
   Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
+  
+  {$ifdef THRhash}  
+  while assigned(result) and (result^.Hash<>aHash) do begin
+   result:=result^.HashNext;
+  end;
+  {$else}
   while assigned(result) and (result^.Key<>Key) do begin
    result:=result^.HashNext;
   end;
+  {$endif}
+  
+  
  end;
  if assigned(result) then begin
   LastUsedItem:=result;

@@ -822,19 +822,31 @@ begin
 end;
 
 function TBESENObjectPropertyContainer.Get(const Key:TBESENString;Hash:TBESENHash=0):TBESENObjectProperty;
+var aHash:TBESENHash;
 begin
+ aHash:=Hash;
  if assigned(LastUsedItem) and (LastUsedItem.Key=Key) then begin
   result:=LastUsedItem;
   Hash:=result.Hash;
+ aHash:=Hash;
  end else begin
   IF Hash=0 then begin
    Hash:=BESENHashKey(Key);
+	aHash:=Hash;
   end;
   Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
+  
+  {$ifdef THRhash}
+  while assigned(result) and (result.Hash<>aHash) do begin
+   result:=result.HashNext;
+  end;
+  {$else}
   while assigned(result) and (result.Key<>Key) do begin
    result:=result.HashNext;
   end;
+  {$endif}
+  
  end;
  if assigned(result) then begin
   LastUsedItem:=result;

@@ -235,7 +235,25 @@ begin
 end;
 
 function TBESENDeclarativeEnvironmentRecord.GetKey(const Key:TBESENString;Hash:TBESENHash=0):PBESENDeclarativeEnvironmentRecordHashItem;
+var aHash:TBESENHash;
 begin
+ aHash:=Hash;
+
+{$ifdef THRhash}
+ if assigned(LastUsedItem) and (LastUsedItem^.Hash=aHash) then begin
+  result:=LastUsedItem;
+  Hash:=result^.Hash;
+ end else begin
+  if Hash=0 then begin
+   Hash:=BESENHashKey(Key);
+  end;
+  Hash:=Hash and HashSizeMask;
+  result:=HashBuckets[Hash].HashFirst;
+  while assigned(result) and (result^.Hash<>aHash) do begin
+   result:=result^.HashNext;
+  end;
+ end;
+ {$else}
  if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) then begin
   result:=LastUsedItem;
   Hash:=result^.Hash;
@@ -249,6 +267,8 @@ begin
    result:=result^.HashNext;
   end;
  end;
+ {$endif}
+ 
  if assigned(result) then begin
   LastUsedItem:=result;
   if HashBuckets[Hash].HashFirst<>result then begin
@@ -269,28 +289,50 @@ begin
 end;
 
 function TBESENDeclarativeEnvironmentRecord.NewKey(const Key:TBESENString;Force:boolean=false;Hash:TBESENHash=0):PBESENDeclarativeEnvironmentRecordHashItem;
+var aHash:TBESENHash;
 begin
+ aHash:=Hash;
+
  if Force then begin
   result:=nil;
+  
   if Hash=0 then begin
    Hash:=BESENHashKey(Key);
+   aHash:=Hash;
   end;
+  
   Hash:=Hash and HashSizeMask;
- end else if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) then begin
+ end else 
+ {$ifdef THRhash}
+ if assigned(LastUsedItem) and (LastUsedItem^.Hash=aHash) 
+ {$else}
+ if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) 
+ {$endif}
+ then begin
   result:=LastUsedItem;
   Hash:=result^.Hash;
  end else begin
   if Hash=0 then begin
    Hash:=BESENHashKey(Key);
+   aHash:=Hash;
   end;
   Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
   if not assigned(result) then begin
    inc(HashBucketsUsed);
   end;
+  
+  {$ifdef THRhash}
+  while assigned(result) and (result^.Hash<>aHash) do begin
+   result:=result^.HashNext;
+  end;
+  {$else}
   while assigned(result) and (result^.Key<>Key) do begin
    result:=result^.HashNext;
   end;
+  {$endif}
+  
+  
  end;
  if not assigned(result) then begin
   inc(HashedItems);
