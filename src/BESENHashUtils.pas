@@ -35,12 +35,12 @@ unit BESENHashUtils;
 
 interface
 
-uses BESENConstants,BESENTypes;
-
-
+uses BESENConstants,BESENTypes
 {$ifdef THRhash}
-uses thrHashUtils;
+,thrHashUtils     
 {$endif}
+;
+
 
 function BESENHashKey(const Key:TBESENString):TBESENHash;
 function BESENDoubleHash(Hash:TBESENHash):TBESENHash;
