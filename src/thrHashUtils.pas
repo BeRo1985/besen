@@ -18,7 +18,7 @@ uint32_t X31_hash_string(const char *s)
     for (++s ; *s; ++s) h = (h << 5) - h + *s;
     return h;
 }
-
+ 
 *)
 
 
