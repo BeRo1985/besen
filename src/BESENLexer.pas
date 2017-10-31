@@ -565,6 +565,7 @@ var c:TBESENUTF32CHAR;
  var LowIndex,HighIndex,MiddleIndex:integer;
  {$ifdef THRhash2}
  aHash: TBESENHash;
+ aHash1: TBESENHash;
  {$endif}
  begin
   result:=lttIDENTIFIER;
@@ -595,14 +596,13 @@ var c:TBESENUTF32CHAR;
     end;
     else begin
      MiddleIndex:=(LowIndex+HighIndex) div 2;
-     if KeywordsHash[
-     Keywords[MiddleIndex]
-     ]=aHash then begin
+	 
+	 aHash1 :=KeywordsHash[ Keywords[MiddleIndex] ];
+	 
+     if aHash1=aHash then begin
       result:=Keywords[MiddleIndex];
      end else if LowIndex<>HighIndex then begin
-      if KeywordsHash[
-      Keywords[MiddleIndex]
-      ]>aHash then begin
+      if aHash1>aHash then begin
        HighIndex:=MiddleIndex-1;
       end else begin
        LowIndex:=MiddleIndex+1;

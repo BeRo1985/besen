@@ -215,7 +215,9 @@ begin
   HashBucketsUsed:=0;
   Item:=First;
   while assigned(Item) do begin
+  
    Hash:=BESENHashKey(Item^.Key) and HashSizeMask;
+   
    Item^.Hash:=Hash;
    if assigned(HashBuckets[Hash].HashLast) then begin
     HashBuckets[Hash].HashLast^.HashNext:=Item;
@@ -243,7 +245,7 @@ begin
   if Hash=0 then begin
    Hash:=BESENHashKey(Key);
   end;
-  Hash:=Hash and HashSizeMask;
+Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
   while assigned(result) and (result^.Key<>Key) do begin
    result:=result^.HashNext;
