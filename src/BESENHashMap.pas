@@ -177,11 +177,7 @@ end;
 function TBESENHashMap.GetKey(const Key:TBESENString;Hash:TBESENHash=0):PBESENHashMapItem;
 begin
 
-  {$ifdef THRhash2}
- if assigned(LastUsedItem) and (LastUsedItem^.Hash=Hash) then begin
- {$else}
  if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) then begin
- {$endif}
  
   result:=LastUsedItem;
   Hash:=result^.Hash;
@@ -192,15 +188,9 @@ begin
   Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
   
-  {$ifdef THRhash2}  
-  while assigned(result) and (result^.Hash<>Hash) do begin
-   result:=result^.HashNext;
-  end;
-  {$else}
   while assigned(result) and (result^.Key<>Key) do begin
    result:=result^.HashNext;
   end;
-  {$endif}
   
   
  end;
