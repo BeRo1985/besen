@@ -3,6 +3,10 @@ BESEN is an acronym for "**B** ero's **E** cma **S** cript **E** ngine", and it 
 
 BESEN is licensed under the LGPL v2.1 with static-linking-exception.
 
+# Support me
+
+[Support me at Patreon](https://www.patreon.com/bero)
+
 # Features
 
 * Complete implementation of the ECMAScript Fifth Edition standard
