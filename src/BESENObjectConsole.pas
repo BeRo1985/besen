@@ -5,8 +5,8 @@
 BESEN - A ECMAScript Fifth Edition Object Pascal Implementation
 Copyright (C) 2009-2016, Benjamin 'BeRo' Rosseaux
 
-The source code of the BESEN ecmascript engine library and helper tools are 
-distributed under the Library GNU Lesser General Public License Version 2.1 
+The source code of the BESEN ecmascript engine library and helper tools are
+distributed under the Library GNU Lesser General Public License Version 2.1
 (see the file copying.txt) with the following modification:
 
 As a special exception, the copyright holders of this library give you
@@ -16,7 +16,7 @@ and to copy and distribute the resulting executable under terms of your choice,
 provided that you also meet, for each linked independent module, the terms
 and conditions of the license of that module. An independent module is a module
 which is not derived from or based on this library. If you modify this
-library, you may extend this exception to your version of the library, but you 
+library, you may extend this exception to your version of the library, but you
 are not obligated to do so. If you do not wish to do so, delete this exception
 statement from your version.
 
@@ -41,50 +41,102 @@ const BESENObjectConsoleSource:{$ifdef BESENSingleStringType}TBESENSTRING{$else}
 '(function initConsole(global) {'+#13#10+
 ''+#13#10+
 '  // helpers'+#13#10+
-''+#13#10+
-'  var getClass = Object.prototype.toString;'+#13#10+
 '  var timeMap = {};'+#13#10+
 ''+#13#10+
 '  function repeatSring(string, times) {'+#13#10+
 '    return Array(times + 1).join(string);'+#13#10+
 '  }'+#13#10+
 ''+#13#10+
-'  function dir(object, deep, level) {'+#13#10+
-'    level || (level = 1);'+#13#10+
-'    typeof deep == "undefined" && (deep = true);'+#13#10+
-'    var openBracket, closeBracket;'+#13#10+
-'    if (Array.isArray(object)) {'+#13#10+
-'      openBracket = "["; closeBracket = "]"'+#13#10+
-'    } else {'+#13#10+
-'      openBracket = "{"; closeBracket = "}"'+#13#10+
-'    }'+#13#10+
-'    var props = [];'+#13#10+
-'    var indent = repeatSring(console.dir.indention, level);'+#13#10+
-'    if (console.dir.showInternals) {'+#13#10+
-'      props.push(indent + "[[Class]]: \"" + getClass.call(object).slice(8, -1) + "\"");'+#13#10+
-'    }'+#13#10+
-'    var data, current, currentClass;'+#13#10+
-'    var goDeeper = (typeof deep == "number" ? deep > level : deep);'+#13#10+
-'    Object.getOwnPropertyNames(object).forEach(function (property) {'+#13#10+
-'      current = object[property];'+#13#10+
-'      currentClass = getClass.call(current);'+#13#10+
-'      if (goDeeper && (currentClass == "[object Object]" || Array.isArray(current))) {'+#13#10+
-'        data = dir(current, deep, level + 1);'+#13#10+
-'      } else {'+#13#10+
-'        data = ('+#13#10+
-'          typeof current == "function" ? "function" : ('+#13#10+
-'            Array.isArray(current) ? "[" + current + "]" :'+#13#10+
-'            (currentClass == "[object String]" ? "\""  + current + "\"" : current)'+#13#10+
-'          )'+#13#10+
-'        );'+#13#10+
+'  function dir(o, recurse, compress, level)'+#13#10+
+'  {'+#13#10+
+'  var s = "";'+#13#10+
+'  var pfx = "";'+#13#10+
+''+#13#10+
+'  if (typeof recurse == "undefined")'+#13#10+
+'      recurse = 0;'+#13#10+
+'  if (typeof level == "undefined")'+#13#10+
+'      level = 0;'+#13#10+
+'  if (typeof compress == "undefined")'+#13#10+
+'      compress = true;'+#13#10+
+''+#13#10+
+'  for (var i = 0; i < level; i++)'+#13#10+
+'      pfx += (compress) ? "| " : "|  ";'+#13#10+
+''+#13#10+
+'  var tee = (compress) ? "+ " : "+- ";'+#13#10+
+''+#13#10+
+''+#13#10+
+'  Object.getOwnPropertyNames(o).forEach(function (i) {'+#13#10+
+'      var t, ex;'+#13#10+
+'      try'+#13#10+
+'      {'+#13#10+
+'          t = typeof o[i];'+#13#10+
 '      }'+#13#10+
-'      props.push(indent + property + ": " + data);'+#13#10+
-'    });'+#13#10+
-'    return "".concat('+#13#10+
-'      openBracket, "\n", props.join(",\n"), "\n",'+#13#10+
-'      (level > 1 ? repeatSring(console.dir.indention, level - 1) : ""),'+#13#10+
-'      closeBracket'+#13#10+
-'    );'+#13#10+
+'      catch (ex)'+#13#10+
+'      {'+#13#10+
+'          t = "ERROR";'+#13#10+
+'      }'+#13#10+
+''+#13#10+
+'      switch (t)'+#13#10+
+'      {'+#13#10+
+'          case "function":'+#13#10+
+'              var sfunc = String(o[i]).split("\n");'+#13#10+
+'              if (sfunc[1].indexOf(''native'') !== -1)'+#13#10+
+'                  sfunc = "[native code]";'+#13#10+
+'              else'+#13#10+
+'                  if (sfunc.length == 1)'+#13#10+
+'                      sfunc = String(sfunc);'+#13#10+
+'                  else'+#13#10+
+'                      sfunc = sfunc.length + " lines";'+#13#10+
+'              s += pfx + tee + i + " (function) " + sfunc + "\n";'+#13#10+
+''+#13#10+
+'              if ((i != "parent") && (recurse))'+#13#10+
+'                  s += dir(o[i], recurse - 1,'+#13#10+
+'                                       compress, level + 1);'+#13#10+
+''+#13#10+
+'              break;'+#13#10+
+''+#13#10+
+'          case "object":'+#13#10+
+'              s += pfx + tee + i + " (object)";'+#13#10+
+'              if (o[i] == null)'+#13#10+
+'              {'+#13#10+
+'                  s += " null\n";'+#13#10+
+'                  break;'+#13#10+
+'              }'+#13#10+
+''+#13#10+
+'              s += "\n";'+#13#10+
+''+#13#10+
+'              if (!compress)'+#13#10+
+'                  s += pfx + "|\n";'+#13#10+
+'              if ((i != "parent") && (recurse))'+#13#10+
+'                  s += dir(o[i], recurse - 1,'+#13#10+
+'                                       compress, level + 1);'+#13#10+
+'              break;'+#13#10+
+''+#13#10+
+'          case "string":'+#13#10+
+'              if (o[i].length > 200)'+#13#10+
+'                  s += pfx + tee + i + " (" + t + ") " +'+#13#10+
+'                      o[i].length + " chars\n";'+#13#10+
+'              else'+#13#10+
+'                  s += pfx + tee + i + " (" + t + ") ''" + o[i] + "''\n";'+#13#10+
+'              break;'+#13#10+
+''+#13#10+
+'          case "ERROR":'+#13#10+
+'              s += pfx + tee + i + " (" + t + ") ?\n";'+#13#10+
+'              break;'+#13#10+
+''+#13#10+
+'          default:'+#13#10+
+'              s += pfx + tee + i + " (" + t + ") " + o[i] + "\n";'+#13#10+
+''+#13#10+
+'      }'+#13#10+
+''+#13#10+
+'      if (!compress)'+#13#10+
+'          s += pfx + "|\n";'+#13#10+
+''+#13#10+
+'  });'+#13#10+
+''+#13#10+
+'  s += pfx + "*\n";'+#13#10+
+''+#13#10+
+'  return s;'+#13#10+
 '  }'+#13#10+
 ''+#13#10+
 '  /**'+#13#10+
@@ -102,23 +154,14 @@ const BESENObjectConsoleSource:{$ifdef BESENSingleStringType}TBESENSTRING{$else}
 '      println(s);'+#13#10+
 '    },'+#13#10+
 ''+#13#10+
-'    /**'+#13#10+
-'     * dir an object'+#13#10+
-'     * @param {Object} object'+#13#10+
-'     * @param {Variant} deep - level of depth, default is {Boolean} true'+#13#10+
-'     * can be set also to {Number} value specifying needed level of depth'+#13#10+
-'     * Examples:'+#13#10+
-'     * - console.dir(obj) // console.dir(obj, true)'+#13#10+
-'     * - console.dir(obj, false); // only first level is shown'+#13#10+
-'     * - console.dir(obj, 3); // properties of three levels are shown'+#13#10+
-'     */'+#13#10+
-'    dir: function (object, deep) {'+#13#10+
+''+#13#10+
+'    dir: function (object, recurse, compress, level) {'+#13#10+
 '      // if called for a primitive'+#13#10+
 '      if (Object(object) !== object) {'+#13#10+
 '        return console.log(object);'+#13#10+
 '      }'+#13#10+
 '      // else for an object'+#13#10+
-'      return println(dir(object, deep));'+#13#10+
+'      return println(dir(object, recurse, compress ,level));'+#13#10+
 '    },'+#13#10+
 ''+#13#10+
 '    // time functions borrowed from Firebug'+#13#10+
@@ -141,13 +184,6 @@ const BESENObjectConsoleSource:{$ifdef BESENSingleStringType}TBESENSTRING{$else}
 '      }'+#13#10+
 '    }'+#13#10+
 '  };'+#13#10+
-''+#13#10+
-'  // indention for dir, default is 4 spaces'+#13#10+
-'  console.dir.indention = "    ";'+#13#10+
-''+#13#10+
-'  // whether to show internal properties such as [[Class]]'+#13#10+
-'  console.dir.showInternals = true;'+#13#10+
-''+#13#10+
 '})(this);'+#13#10;
 
 implementation
