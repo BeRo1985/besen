@@ -3,7 +3,7 @@
 ********************************************************************************
 
 BESEN - A ECMAScript Fifth Edition Object Pascal Implementation
-Copyright (C) 2009-2012, Benjamin 'BeRo' Rosseaux
+Copyright (C) 2009-2018, Benjamin 'BeRo' Rosseaux
 
 The source code of the BESEN ecmascript engine library and helper tools are 
 distributed under the Library GNU Lesser General Public License Version 2.1 
@@ -301,6 +301,16 @@ or contact:
   {$define HasJIT}
  {$endif}
 {$endif}
+{$ifdef NextGen}
+ {$define BESENEmbarcaderoNextGen}
+ {$define BESENSingleStringType}
+ {$define PurePascal}
+ {$ZeroBasedStrings off}
+{$endif}
+{$ifdef PurePascal}
+ {$define DisableJIT}
+ {$undef ForceJIT}
+{$endif}
 {$ifdef DisableJIT}
  {$undef HasJIT}
 {$endif}
@@ -312,6 +322,11 @@ or contact:
 {$endif}
 {$ifndef HAS_TYPE_DOUBLE}
  {$error No double floating point precision }
+{$endif}
+{$ifdef DelphiXE2AndUp}
+ {$ifdef MacOS}
+  {$define BESENDelphiHasNoSystemTimeMore}
+ {$endif}
 {$endif}
 
 
