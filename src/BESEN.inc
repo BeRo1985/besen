@@ -3,7 +3,7 @@
 ********************************************************************************
 
 BESEN - A ECMAScript Fifth Edition Object Pascal Implementation
-Copyright (C) 2009-2016, Benjamin 'BeRo' Rosseaux
+Copyright (C) 2009-2012, Benjamin 'BeRo' Rosseaux
 
 The source code of the BESEN ecmascript engine library and helper tools are 
 distributed under the Library GNU Lesser General Public License Version 2.1 
@@ -185,7 +185,7 @@ or contact:
   {$define Delphi2009AndUp}
  {$endif}
  {$ifdef ver300}
-  {$define Delphi10Seattle}
+  {$define DelphiSeattle}
   {$define DelphiXEAndUp}
   {$define DelphiXE2AndUp}
   {$define DelphiXE3AndUp}
@@ -194,11 +194,11 @@ or contact:
   {$define DelphiXE6AndUp}
   {$define DelphiXE7AndUp}
   {$define DelphiXE8AndUp}
+  {$define DelphiSeattleAndUp}
   {$define Delphi2009AndUp}
-  {$define Delphi10SeattleAndUp}
  {$endif}
  {$ifdef ver310}
-  {$define Delphi10Berlin}
+  {$define DelphiBerlin}
   {$define DelphiXEAndUp}
   {$define DelphiXE2AndUp}
   {$define DelphiXE3AndUp}
@@ -207,10 +207,39 @@ or contact:
   {$define DelphiXE6AndUp}
   {$define DelphiXE7AndUp}
   {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
   {$define Delphi2009AndUp}
-  {$define Delphi10SeattleAndUp}
-  {$define Delphi10BerlinAndUp}
- {$endif} 
+ {$endif}
+ {$ifdef ver320}
+  {$define DelphiTokyo}
+  {$define Delphi2009AndUp}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
+  {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
+  {$define DelphiTokyoAndUp}
+ {$endif}
+ {$ifdef ver330}
+  {$define DelphiRio}
+  {$define Delphi2009AndUp}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
+  {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
+  {$define DelphiTokyoAndUp}
+  {$define DelphiRioAndUp}
+ {$endif}
+
  {$ifndef Delphi4or5}
   {$ifndef BCB}
    {$define Delphi6AndUp}
@@ -272,16 +301,6 @@ or contact:
   {$define HasJIT}
  {$endif}
 {$endif}
-{$ifdef NextGen}
- {$define BESENEmbarcaderoNextGen}
- {$define BESENSingleStringType}
- {$define PurePascal}
- {$ZeroBasedStrings off}
-{$endif}
-{$ifdef PurePascal}
- {$define DisableJIT}
- {$undef ForceJIT}
-{$endif}
 {$ifdef DisableJIT}
  {$undef HasJIT}
 {$endif}
@@ -294,9 +313,5 @@ or contact:
 {$ifndef HAS_TYPE_DOUBLE}
  {$error No double floating point precision }
 {$endif}
-{$ifdef DelphiXE2AndUp}
- {$ifdef MacOS}
-  {$define BESENDelphiHasNoSystemTimeMore}
- {$endif}
-{$endif}
+
 
