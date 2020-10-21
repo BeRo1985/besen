@@ -85,10 +85,12 @@ type TBESENLexerTokenType=(ltNONE,ltUNKNOWN,ltEOF,
       IntValue:int64;
       FloatValue:double;
       LineNumber:integer;
+      Column:integer;
       LineEnd:longbool;
       WasLineEnd:longbool;
       OldChar:TBESENUTF32CHAR;
       OldLineNumber:integer;
+      OldLineBeginPosition:Integer;
       OldPosition:integer;
       OldCharEOF:longbool;
       OldTokenEOF:longbool;
@@ -99,6 +101,7 @@ type TBESENLexerTokenType=(ltNONE,ltUNKNOWN,ltEOF,
        Source:{$ifdef BESENSingleStringType}TBESENSTRING{$else}TBESENUTF8STRING{$endif};
        Position:integer;
        LineNumber:integer;
+       LineBeginPosition:integer;
        CurrentChar:TBESENUTF32CHAR;
        WarningProc:TBESENWarningProc;
        CharEOF:longbool;
@@ -195,6 +198,7 @@ begin
  Source:='';
  Position:=1;
  LineNumber:=1;
+ LineBeginPosition:=1;
  WarningProc:=nil;
  CharEOF:=false;
  TokenEOF:=false;
@@ -268,6 +272,7 @@ procedure TBESENLexer.Restore(var Token:TBESENLexerToken);
 begin
  Position:=Token.OldPosition;
  LineNumber:=Token.OldLineNumber;
+ LineBeginPosition:=Token.OldLineBeginPosition;
  CurrentChar:=Token.OldChar;
  CharEOF:=Token.OldCharEOF;
  TokenEOF:=Token.OldTokenEOF;
@@ -593,10 +598,12 @@ begin
  AResult.FloatValue:=0;
  AResult.IntValue:=0;
  AResult.LineNumber:=LineNumber;
+ AResult.Column:=(Position-LineBeginPosition)+1;
  AResult.LineEnd:=false;
  AResult.WasLineEnd:=LastWasLineEnd;
  AResult.OldChar:=CurrentChar;
  AResult.OldLineNumber:=LineNumber;
+ AResult.OldLineBeginPosition:=LineBeginPosition;
  AResult.OldPosition:=Position;
  AResult.OldCharEOF:=CharEOF;
  AResult.OldTokenEOF:=TokenEOF;
@@ -622,11 +629,13 @@ begin
        NextChar;
       end;
       inc(LineNumber);
+      LineBeginPosition:=Position;
       AResult.WasLineEnd:=true;
      end;
      $000a,$2028,$2029:begin
       NextChar;
       inc(LineNumber);
+      LineBeginPosition:=Position;
       AResult.WasLineEnd:=true;
      end;
      else begin
@@ -642,6 +651,7 @@ begin
     AResult.LineNumber:=LineNumber;
     AResult.OldChar:=CurrentChar;
     AResult.OldLineNumber:=LineNumber;
+    AResult.OldLineBeginPosition:=LineBeginPosition;
     AResult.OldPosition:=Position;
     AResult.OldCharEOF:=CharEOF;
     AResult.OldTokenEOF:=TokenEOF;
@@ -730,6 +740,7 @@ begin
          end else begin
           NextChar;
          end;
+         LineBeginPosition:=Position;
         end;
         continue;
        end;
@@ -751,6 +762,7 @@ begin
            c:=CurrentChar;
            NextChar;
           end;
+          LineBeginPosition:=Position;
          end else begin
           c:=CurrentChar;
           NextChar;
@@ -842,6 +854,7 @@ begin
            end else begin
             NextChar;
            end;
+           LineBeginPosition:=Position;
            continue;
           end;
          end else begin
@@ -877,6 +890,7 @@ begin
            end else begin
             NextChar;
            end;
+           LineBeginPosition:=Position;
            continue;
           end;
          end else begin
@@ -1043,11 +1057,13 @@ begin
            end;
            inc(LineNumber);
            AResult.WasLineEnd:=true;
+           LineBeginPosition:=Position;
           end;
           $000a,$2028,$2029:begin
            AResult.StringValue:=AResult.StringValue+widechar(word(CurrentChar));
            inc(LineNumber);
            AResult.WasLineEnd:=true;
+           LineBeginPosition:=Position;
            break;
           end;
           ord('b'):begin

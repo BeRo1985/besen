@@ -239,6 +239,51 @@ or contact:
   {$define DelphiTokyoAndUp}
   {$define DelphiRioAndUp}
  {$endif}
+ {$ifdef ver340}
+  {$define DelphiRio}
+  {$define Delphi2009AndUp}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
+  {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
+  {$define DelphiTokyoAndUp}
+  {$define DelphiRioAndUp}
+ {$endif}
+ {$ifdef ver350}
+  {$define DelphiRio}
+  {$define Delphi2009AndUp}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
+  {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
+  {$define DelphiTokyoAndUp}
+  {$define DelphiRioAndUp}
+ {$endif}
+ {$ifdef ver360}
+  {$define DelphiRio}
+  {$define Delphi2009AndUp}
+  {$define DelphiXEAndUp}
+  {$define DelphiXE2AndUp}
+  {$define DelphiXE3AndUp}
+  {$define DelphiXE4AndUp}
+  {$define DelphiXE5AndUp}
+  {$define DelphiXE6AndUp}
+  {$define DelphiXE7AndUp}
+  {$define DelphiXE8AndUp}
+  {$define DelphiBerlinAndUp}
+  {$define DelphiTokyoAndUp}
+  {$define DelphiRioAndUp}
+ {$endif}
 
  {$ifndef Delphi4or5}
   {$ifndef BCB}
