@@ -108,7 +108,9 @@ begin
  FillChar(HashBuckets,sizeof(TBESENDeclarativeEnvironmentRecordHashBuckets),#0);
  First:=nil;
  Last:=nil;
+ 
  HashSize:=256;
+ 
  HashSizeMask:=HashSize-1;
  HashedItems:=0;
  HashBucketsUsed:=0;
@@ -155,7 +157,9 @@ begin
  First:=nil;
  Last:=nil;
  LastUsedItem:=nil;
+ 
  HashSize:=256;
+ 
  HashSizeMask:=HashSize-1;
  HashedItems:=0;
  HashBucketsUsed:=0;
@@ -215,7 +219,9 @@ begin
   HashBucketsUsed:=0;
   Item:=First;
   while assigned(Item) do begin
+  
    Hash:=BESENHashKey(Item^.Key) and HashSizeMask;
+   
    Item^.Hash:=Hash;
    if assigned(HashBuckets[Hash].HashLast) then begin
     HashBuckets[Hash].HashLast^.HashNext:=Item;

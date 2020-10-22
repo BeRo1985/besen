@@ -761,7 +761,8 @@ begin
   if l>1 then begin
    SetLength(result,l-1);
   end else begin
-   result:=BESENAnsiTrim(result);
+   //result:=BESENAnsiTrim(result);
+   result:=Trim(result);
   end;
  end;
 end;
@@ -782,7 +783,7 @@ begin
     s:=s+#13#10;
    end;
   end;
-  p:=BESENANSIPosChar('=',s);
+  p:=Pos('=',s);
   while p>0 do begin
    encode:=ansichar(byte((pos(s[p+1],hexa) shl 4) or pos(s[p+2],hexa)));
    if encode=#0 then begin
@@ -790,13 +791,13 @@ begin
    end;
    result:=result+copy(s,1,p-1)+encode;
    delete(s,1,p+2);
-   p:=BESENANSIPosChar('=',s);
+   p:=Pos('=',s);
   end;
   result:=result+s;
-  p:=BESENANSIPosChar('_',result);
+  p:=Pos('_',result);
   while p>0 do begin
    result[p]:=' ';
-   p:=BESENANSIPosChar('_',result);
+   p:=Pos('_',result);
   end;
  end;
 end;
@@ -1190,7 +1191,7 @@ function BESENEncodeString(Value:TBESENANSISTRING;CharFrom:TBESENCharset;CharTo:
      inc(i);
      if c='-' then begin
       break;
-     end else if (c='=') or (BESENANSIPosChar(c,BESENBase64Chars)<1) then begin
+     end else if (c='=') or (Pos(c,BESENBase64Chars)<1) then begin
       dec(i);
       break;
      end;
@@ -1243,7 +1244,7 @@ function BESENEncodeString(Value:TBESENANSISTRING;CharFrom:TBESENCharset;CharTo:
      end;
     end;
     s:=BESENEncodeBase64(s);
-    j:=BESENANSIPosChar('=',s);
+    j:=Pos('=',s);
     if j>0 then begin
      s:=copy(s,1,j-1);
     end;
@@ -1402,60 +1403,60 @@ end;
 
 function BESENGetCodePage(Value:TBESENANSISTRING):TBESENCharset;
 begin
- Value:=BESENANSIUpperCase(Value);
- if BESENANSIPos('ISO-8859-10',Value)>0 then begin
+ Value:=UpperCase(Value);
+ if Pos('ISO-8859-10',Value)>0 then begin
   result:=ISO_8859_10;
- end else if BESENANSIPos('ISO-8859-1',Value)>0 then begin
+ end else if Pos('ISO-8859-1',Value)>0 then begin
   result:=ISO_8859_1;
- end else if BESENANSIPos('ISO-8859-2',Value)>0 then begin
+ end else if Pos('ISO-8859-2',Value)>0 then begin
   result:=ISO_8859_2;
- end else if BESENANSIPos('ISO-8859-3',Value)>0 then begin
+ end else if Pos('ISO-8859-3',Value)>0 then begin
   result:=ISO_8859_3;
- end else if BESENANSIPos('ISO-8859-4',Value)>0 then begin
+ end else if Pos('ISO-8859-4',Value)>0 then begin
   result:=ISO_8859_4;
- end else if BESENANSIPos('ISO-8859-5',Value)>0 then begin
+ end else if Pos('ISO-8859-5',Value)>0 then begin
   result:=ISO_8859_5;
- end else if BESENANSIPos('ISO-8859-6',Value)>0 then begin
+ end else if Pos('ISO-8859-6',Value)>0 then begin
   result:=ISO_8859_6;
- end else if BESENANSIPos('ISO-8859-7',Value)>0 then begin
+ end else if Pos('ISO-8859-7',Value)>0 then begin
   result:=ISO_8859_7;
- end else if BESENANSIPos('ISO-8859-8',Value)>0 then begin
+ end else if Pos('ISO-8859-8',Value)>0 then begin
   result:=ISO_8859_8;
- end else if BESENANSIPos('ISO-8859-9',Value)>0 then begin
+ end else if Pos('ISO-8859-9',Value)>0 then begin
   result:=ISO_8859_9;
- end else if (BESENANSIPos('WINDOWS-1250',Value)>0) or (BESENANSIPos('X-CP1250',Value)>0) then begin
+ end else if (Pos('WINDOWS-1250',Value)>0) or (Pos('X-CP1250',Value)>0) then begin
   result:=CP1250;
- end else if (BESENANSIPos('WINDOWS-1251',Value)>0) or (BESENANSIPos('X-CP1251',Value)>0) then begin
+ end else if (Pos('WINDOWS-1251',Value)>0) or (Pos('X-CP1251',Value)>0) then begin
   result:=CP1251;
- end else if (BESENANSIPos('WINDOWS-1252',Value)>0) or (BESENANSIPos('X-CP1252',Value)>0) then begin
+ end else if (Pos('WINDOWS-1252',Value)>0) or (Pos('X-CP1252',Value)>0) then begin
   result:=CP1252;
- end else if (BESENANSIPos('WINDOWS-1253',Value)>0) or (BESENANSIPos('X-CP1253',Value)>0) then begin
+ end else if (Pos('WINDOWS-1253',Value)>0) or (Pos('X-CP1253',Value)>0) then begin
   result:=CP1253;
- end else if (BESENANSIPos('WINDOWS-1254',Value)>0) or (BESENANSIPos('X-CP1254',Value)>0) then begin
+ end else if (Pos('WINDOWS-1254',Value)>0) or (Pos('X-CP1254',Value)>0) then begin
   result:=CP1254;
- end else if (BESENANSIPos('WINDOWS-1255',Value)>0) or (BESENANSIPos('X-CP1255',Value)>0) then begin
+ end else if (Pos('WINDOWS-1255',Value)>0) or (Pos('X-CP1255',Value)>0) then begin
   result:=CP1255;
- end else if (BESENANSIPos('WINDOWS-1256',Value)>0) or (BESENANSIPos('X-CP1256',Value)>0) then begin
+ end else if (Pos('WINDOWS-1256',Value)>0) or (Pos('X-CP1256',Value)>0) then begin
   result:=CP1256;
- end else if (BESENANSIPos('WINDOWS-1257',Value)>0) or (BESENANSIPos('X-CP1257',Value)>0) then begin
+ end else if (Pos('WINDOWS-1257',Value)>0) or (Pos('X-CP1257',Value)>0) then begin
   result:=CP1257;
- end else if (BESENANSIPos('WINDOWS-1258',Value)>0) or (BESENANSIPos('X-CP1258',Value)>0) then begin
+ end else if (Pos('WINDOWS-1258',Value)>0) or (Pos('X-CP1258',Value)>0) then begin
   result:=CP1258;
- end else if BESENANSIPos('KOI8-R',Value)>0 then begin
+ end else if Pos('KOI8-R',Value)>0 then begin
   result:=KOI8_R;
- end else if BESENANSIPos('UTF-7',Value)>0 then begin
+ end else if Pos('UTF-7',Value)>0 then begin
   result:=UTF_7;
- end else if BESENANSIPos('UTF-8',Value)>0 then begin
+ end else if Pos('UTF-8',Value)>0 then begin
   result:=UTF_8;
- end else if BESENANSIPos('UTF-16',Value)>0 then begin
+ end else if Pos('UTF-16',Value)>0 then begin
   result:=UTF_16;
- end else if BESENANSIPos('UTF-32',Value)>0 then begin
+ end else if Pos('UTF-32',Value)>0 then begin
   result:=UTF_32;
- end else if BESENANSIPos('UCS-4',Value)>0 then begin
+ end else if Pos('UCS-4',Value)>0 then begin
   result:=UCS_4;
- end else if BESENANSIPos('UCS-2',Value)>0 then begin
+ end else if Pos('UCS-2',Value)>0 then begin
   result:=UCS_2;
- end else if BESENANSIPos('UNICODE',Value)>0 then begin
+ end else if Pos('UNICODE',Value)>0 then begin
   result:=UCS_2;
  end else begin
   result:=ISO_8859_1;
@@ -1546,11 +1547,11 @@ var q,us,e:TBESENANSISTRING;
     cs:TBESENCharset;
 begin
  result:='';
- us:=BESENANSIUpperCase(s);
- p1:=BESENANSIPos('=?ISO',us);
+ us:=UpperCase(s);
+ p1:=Pos('=?ISO',us);
  while p1>0 do begin
   q:=copy(s,p1+2,length(s));
-  p2:=BESENANSIPosChar('?',q);
+  p2:=Pos('?',q);
   if (p2=0) or (p2>=length(q)-2) or (q[p2+2]<>'?') then begin
    break;
   end;
@@ -1558,7 +1559,7 @@ begin
   cs:=BESENGetCodePage(e);
   encode:=TBESENCHAR(upcase(TBESENCHAR(q[p2+1])));
   q:=copy(q,p2+3,length(q));
-  p3:=BESENANSIPos('?=',q);
+  p3:=Pos('?=',q);
   if p3=0 then begin
    break;
   end;
@@ -1575,18 +1576,18 @@ begin
   inc(p1,2+p2+2+p3);
   delete(s,1,p1);
   delete(us,1,p1);
-  p1:=BESENANSIPos('=?ISO',us);
+  p1:=Pos('=?ISO',us);
  end;
- p1:=BESENANSIPos('=?UTF-7',us);
+ p1:=Pos('=?UTF-7',us);
  while p1>0 do begin
   q:=copy(s,p1+2,length(s));
-  p2:=BESENANSIPosChar('?',q);
+  p2:=Pos('?',q);
   if (p2=0) or (p2>=length(q)-2) or (q[p2+2]<>'?') then begin
    break;
   end;
   encode:=TBESENCHAR(upcase(TBESENCHAR(q[p2+1])));
   q:=copy(q,p2+3,length(q));
-  p3:=BESENANSIPos('?=',q);
+  p3:=Pos('?=',q);
   if p3=0 then begin
    break;
   end;
@@ -1603,18 +1604,18 @@ begin
   inc(p1,2+p2+2+p3);
   delete(s,1,p1);
   delete(us,1,p1);
-  p1:=BESENANSIPos('=?UTF-7',us);
+  p1:=Pos('=?UTF-7',us);
  end;
- p1:=BESENANSIPos('=?UTF-8',us);
+ p1:=Pos('=?UTF-8',us);
  while p1>0 do begin
   q:=copy(s,p1+2,length(s));
-  p2:=BESENANSIPosChar('?',q);
+  p2:=Pos('?',q);
   if (p2=0) or (p2>=length(q)-2) or (q[p2+2]<>'?') then begin
    break;
   end;
   encode:=TBESENCHAR(upcase(TBESENCHAR(q[p2+1])));
   q:=copy(q,p2+3,length(q));
-  p3:=BESENANSIPos('?=',q);
+  p3:=Pos('?=',q);
   if p3=0 then begin
    break;
   end;
@@ -1630,12 +1631,12 @@ begin
   inc(p1,2+p2+2+p3);
   delete(s,1,p1);
   delete(us,1,p1);
-  p1:=BESENANSIPos('=?UTF-8',us);
+  p1:=Pos('=?UTF-8',us);
  end;
- p1:=BESENANSIPos('=?',us);
+ p1:=Pos('=?',us);
  while p1>0 do begin
   q:=copy(s,p1+2,length(s));
-  p2:=BESENANSIPosChar('?',q);
+  p2:=Pos('?',q);
   if (p2=0) or (p2>=length(q)-2) or (q[p2+2]<>'?') then begin
    break;
   end;
@@ -1645,12 +1646,12 @@ begin
    result:=result+'=?';
    delete(s,1,p1);
    delete(us,1,p1);
-   p1:=BESENANSIPos('=?',us);
+   p1:=Pos('=?',us);
    continue;
   end;
   encode:=TBESENCHAR(upcase(TBESENCHAR(q[p2+1])));
   q:=copy(q,p2+3,length(q));
-  p3:=BESENANSIPos('?=',q);
+  p3:=Pos('?=',q);
   if p3=0 then begin
    break;
   end;
@@ -1667,7 +1668,7 @@ begin
   inc(p1,2+p2+2+p3);
   delete(s,1,p1);
   delete(us,1,p1);
-  p1:=BESENANSIPos('=?',us);
+  p1:=Pos('=?',us);
  end;
  result:=result+BESENEncodeString(s,ISO_8859_1,UTF_8);
 end;

@@ -632,7 +632,7 @@ function BESENParseISOTime(s:TBESENString):TBESENDate;
    result:=double(pointer(@BESENDoubleNaN)^);
    exit;
   end;
-  result:=BESENMakeDay(StrToIntDef(copy(ss,1,4),0),StrToIntDef(copy(ss,5+(1*Offset),2),0),StrToIntDef(copy(ss,7+(2*Offset),2),0));
+  result:=BESENMakeDay(StrToIntDef(copy(ss,1,4),0),StrToIntDef(copy(ss,5+(Offset),2),0),StrToIntDef(copy(ss,7+(Offset+Offset),2),0));
  end;
  function ParseTime(const ss:TBESENString):TBESENDate;
  var s,ms:TBESENString;
@@ -667,9 +667,10 @@ function BESENParseISOTime(s:TBESENString):TBESENDate;
    exit;
   end;
   Hours:=StrToIntDef(copy(s,1,2),100);
-  Minutes:=StrToIntDef(copy(s,3+(1*Offset),2),100);
+  //Minutes:=StrToIntDef(copy(s,3+(1*Offset),2),100);
+  Minutes:=StrToIntDef(copy(s,3+(Offset),2),100);
   if WithSeconds then begin
-   Seconds:=StrToIntDef(copy(s,5+(2*Offset),2),100);
+   Seconds:=StrToIntDef(copy(s,5+(Offset+Offset),2),100);
   end else begin
    Seconds:=0;
    if length(ms)>0 then begin

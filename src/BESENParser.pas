@@ -295,7 +295,9 @@ var CurrentToken:TBESENLexerToken;
     OldToken:=CurrentToken;
     NextToken;
     if NextIsSemicolon then begin
-     if (length(OldToken.StringValue)=10) and (copy(Lexer.Source,OldToken.OldPosition,10)='use strict') then begin
+     if (length(OldToken.StringValue)=10) then begin
+	 
+	 if (copy(Lexer.Source,OldToken.OldPosition,10)='use strict') then begin
       if UseStrictAlreadyParsed then begin
        AddWarning('"use strict"/''use strict'' already seen!');
       end else begin
@@ -310,6 +312,8 @@ var CurrentToken:TBESENLexerToken;
         TBESEN(Instance).IsStrict:=true;
        end;
       end;
+     end;
+	 
      end;
      FirstDirective:=false;
     end else begin

@@ -496,7 +496,9 @@ begin
  Last:=nil;
  EnumeratorFirst:=nil;
  EnumeratorLast:=nil;
+ 
  HashSize:=256;
+ 
  HashSizeMask:=HashSize-1;
  HashedItems:=0;
  HashBucketsUsed:=0;
@@ -544,7 +546,9 @@ begin
  end;
  First:=nil;
  Last:=nil;
+ 
  HashSize:=256;
+ 
  HashSizeMask:=HashSize-1;
  HashedItems:=0;
  HashBucketsUsed:=0;

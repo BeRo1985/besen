@@ -176,7 +176,9 @@ end;
 
 function TBESENHashMap.GetKey(const Key:TBESENString;Hash:TBESENHash=0):PBESENHashMapItem;
 begin
+
  if assigned(LastUsedItem) and (LastUsedItem^.Key=Key) then begin
+ 
   result:=LastUsedItem;
   Hash:=result^.Hash;
  end else begin
@@ -185,9 +187,12 @@ begin
   end;
   Hash:=Hash and HashSizeMask;
   result:=HashBuckets[Hash].HashFirst;
+  
   while assigned(result) and (result^.Key<>Key) do begin
    result:=result^.HashNext;
   end;
+  
+  
  end;
  if assigned(result) then begin
   LastUsedItem:=result;
