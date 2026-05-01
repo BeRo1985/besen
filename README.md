@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> The primary repository has moved to [git.rosseaux.net/BeRo1985/besen](https://git.rosseaux.net/BeRo1985/besen).
+> This GitHub repository is kept up-to-date via push mirroring.
+
 
 BESEN is an acronym for "**B** ero's **E** cma **S** cript **E** ngine", and it is a complete ECMAScript Fifth Edition Implemention in Object Pascal, which is compilable with Delphi >=7 and Free Pascal >= 2.5.1 (maybe also 2.4.1).
 
